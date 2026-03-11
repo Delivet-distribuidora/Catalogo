@@ -5,7 +5,7 @@
 <title>DeliVet — Catálogo 2025</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=Pacifico&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#F7F3EE;--surface:#fff;--text:#1E1A16;--mid:#6B5F54;--muted:#A89E94;--verde:#3A8F62;--laranja:#E8602A;--radius:20px;}
+:root{--bg:#f7f3ee;--surface:#fff;--text:#1E1A16;--mid:#6B5F54;--muted:#A89E94;--verde:#2c8f8a;--laranja:#5cc6d0;--radius:20px;}
 *{margin:0;padding:0;box-sizing:border-box;}html{scroll-behavior:smooth;}
 body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);font-size:15px;line-height:1.6;}
 nav{position:sticky;top:0;z-index:100;background:rgba(247,243,238,.92);backdrop-filter:blur(18px);border-bottom:1px solid rgba(0,0,0,.07);padding:0 48px;display:flex;align-items:center;gap:32px;height:64px;}
@@ -18,7 +18,7 @@ nav{position:sticky;top:0;z-index:100;background:rgba(247,243,238,.92);backdrop-
 .nav-cats a.active{background:var(--verde);color:#fff;}
 .nav-search{display:flex;align-items:center;gap:8px;background:rgba(0,0,0,.05);border-radius:50px;padding:7px 16px;min-width:200px;}
 .nav-search input{border:none;background:none;outline:none;font-family:'DM Sans',sans-serif;font-size:.82rem;color:var(--text);width:100%;}
-.hero{padding:72px 48px 60px;position:relative;overflow:hidden;background:linear-gradient(135deg,#3A8F62 0%,#4CAF82 60%,#80D8A8 100%);}
+.hero{padding:72px 48px 60px;position:relative;overflow:hidden;background:linear-gradient(135deg,#2c8f8a 0%,#4CAF82 60%,#80D8A8 100%);}
 .hero-blob1{position:absolute;width:500px;height:500px;background:rgba(255,255,255,.10);border-radius:62% 38% 55% 45%/48% 58% 42% 52%;top:-150px;right:-100px;pointer-events:none;}
 .hero-blob2{position:absolute;width:300px;height:300px;background:rgba(255,200,50,.15);border-radius:48% 52% 65% 35%/40% 60% 50% 50%;bottom:-80px;left:30%;pointer-events:none;}
 .hero-content{position:relative;z-index:1;max-width:600px;}
@@ -80,7 +80,7 @@ nav{position:sticky;top:0;z-index:100;background:rgba(247,243,238,.92);backdrop-
 footer{background:var(--text);color:#fff;padding:48px 48px 32px;}
 .footer-inner{max-width:1400px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;}
 .footer-logo{font-family:'Pacifico',cursive;font-size:1.8rem;color:#fff;}
-.footer-logo span{color:#E8602A;}
+.footer-logo span{color:#5cc6d0;}
 .footer-contact{display:flex;gap:20px;flex-wrap:wrap;margin-top:12px;}
 .footer-contact span{font-size:.78rem;color:rgba(255,255,255,.5);}
 .footer-copy{font-size:.72rem;color:rgba(255,255,255,.3);margin-top:16px;}
@@ -114,7 +114,7 @@ footer{background:var(--text);color:#fff;padding:48px 48px 32px;}
 .pv-empty{font-size:.85rem;color:#A89E94;font-style:italic;}
 .pv-nav{display:flex;align-items:center;justify-content:space-between;margin-top:20px;padding-top:16px;border-top:1px solid rgba(0,0,0,.07);}
 .pv-nav-btn{display:inline-flex;align-items:center;gap:5px;background:none;border:1.5px solid rgba(0,0,0,.1);border-radius:50px;padding:6px 14px;font-family:'DM Sans',sans-serif;font-size:.74rem;font-weight:500;color:#6B5F54;cursor:pointer;transition:border-color .15s,color .15s;}
-.pv-nav-btn:hover{border-color:#3A8F62;color:#3A8F62;}
+.pv-nav-btn:hover{border-color:#2c8f8a;color:#2c8f8a;}
 .pv-nav-btn:disabled{opacity:.28;cursor:default;pointer-events:none;}
 .pv-counter{font-size:.7rem;color:#A89E94;letter-spacing:.06em;}
 @media(max-width:600px){.pv-modal{flex-direction:column;}.pv-img-side{width:100%;height:220px;}.pv-name{font-size:1.25rem;}}
@@ -143,7 +143,7 @@ footer{background:var(--text);color:#fff;padding:48px 48px 32px;}
 </head>
 <body>
 <nav>
-  <div><span class="nav-logo" style="color:#3A8F62">DeliVet<span style="color:#E8602A">.</span></span></div>
+  <div><img src="img/logo.png" alt="DeliVet" style="height:40px;object-fit:contain;"></div>
   <ul class="nav-cats" id="navCats">
     <li><a href="#" class="active" data-filter="all">Todos</a></li>
     <li><a href="#cat-0" data-filter="Brinquedos">🎾 Brinquedos</a></li><li><a href="#cat-1" data-filter="Passeio (Guias e Peitorais)">🦮 Passeio</a></li><li><a href="#cat-2" data-filter="Alimentação e Hidratação">🥣 Alimentação</a></li><li><a href="#cat-3" data-filter="Higiene e Estética">✂️ Higiene</a></li><li><a href="#cat-4" data-filter="Outros">🐾 Outros</a></li><li><a href="#cat-5" data-filter="Utilidades e Acessórios">🛍️ Utilidades</a></li>
@@ -157,7 +157,7 @@ footer{background:var(--text);color:#fff;padding:48px 48px 32px;}
   <div class="hero-blob1"></div><div class="hero-blob2"></div>
   <div class="hero-content">
     <p class="hero-eyebrow">Catálogo 2025</p>
-    <h1>Produtos para<br>quem entende de<br><em>pets</em></h1>
+    <h1>Produtos<br>para quem <br><em>entende de pets</em></h1>
     <p class="hero-desc">Linha completa de brinquedos, acessórios, higiene e produtos veterinários para pet shops, clínicas e distribuidores.</p>
     <div class="hero-pills">
       <span class="hero-pill">🎾 Brinquedos</span><span class="hero-pill">🦮 Passeio</span><span class="hero-pill">🥣 Alimentação</span><span class="hero-pill">✂️ Higiene</span>
@@ -1891,10 +1891,10 @@ footer{background:var(--text);color:#fff;padding:48px 48px 32px;}
 <footer>
   <div class="footer-inner">
     <div>
-      <div class="footer-logo">DeliVet<span>.</span></div>
+      <img src="img/logo.png" alt="DeliVet" style="height:48px;object-fit:contain;">
       <div class="footer-contact">
-        <span>📱 (11) 99999-0000</span>
-        <span>✉️ vendas@delivet.com.br</span>
+        
+        
         <span>📸 @delivetdistribuidora</span>
       </div>
     </div>
