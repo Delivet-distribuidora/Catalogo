@@ -2007,14 +2007,31 @@ function pvGalleryNav(dir) {
 function pvSetImg(i) {
   var pvImg = document.getElementById('pvImg');
   var pvPh  = document.getElementById('pvPh');
+  var side  = document.getElementById('pvImgSide');
   pvImg.style.display = 'none'; pvPh.style.display = 'none';
+  // Remove any previous video inserted by viewer
+  var oldVid = side.querySelector('.pv-vid-embed');
+  if (oldVid) oldVid.remove();
   var card = pvAllCards[pvIdx];
   var g    = card.style.getPropertyValue('--g') || '135deg,#f0f0f0,#e0e0e0';
   if (pvCurImgs.length > 0) {
-    pvImg.src = pvCurImgs[i].src;
-    pvImg.style.display = 'block';
-    pvImg.className = 'has-zoom';
-    pvImg.onclick = function(e){ e.stopPropagation(); pvImgZoom(pvImg.src, g); };
+    var srcEl = pvCurImgs[i] || pvCurImgs[0];
+    if (srcEl.tagName === 'VIDEO') {
+      // Render video in viewer
+      var vid = document.createElement('video');
+      vid.className = 'pv-vid-embed';
+      vid.src = srcEl.src;
+      vid.muted = true; vid.loop = true; vid.autoplay = true; vid.playsInline = true;
+      vid.controls = true;
+      vid.style.cssText = 'max-width:90%;max-height:60vh;border-radius:12px;display:block;margin:auto;';
+      side.appendChild(vid);
+      pvImg.className = ''; pvImg.onclick = null;
+    } else {
+      pvImg.src = srcEl.src;
+      pvImg.style.display = 'block';
+      pvImg.className = 'has-zoom';
+      pvImg.onclick = function(e){ e.stopPropagation(); pvImgZoom(pvImg.src, g); };
+    }
   } else {
     pvImg.className = ''; pvImg.onclick = null;
   }
@@ -2048,7 +2065,7 @@ function pvRenderModal() {
   modal.style.setProperty('--pv-tag-bg', tagBg);
   modal.style.setProperty('--pv-tag-c',  tagC);
 
-  pvCurImgs   = Array.from(card.querySelectorAll('.card-img img'));
+  pvCurImgs   = Array.from(card.querySelectorAll('.card-img img, .card-img video'));
   pvActiveImg = 0;
   pvSetImg(0);
   pvUpdateNav();
