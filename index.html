@@ -1874,7 +1874,7 @@ searchInput.addEventListener('input', function(){
   const q = this.value.toLowerCase().trim();
   let total = 0;
   cards.forEach(c => {
-    const m = !q || c.querySelector('h3').textContent.toLowerCase().includes(q);
+    const m = !q || c.querySelector('h3').textContent.toLowerCase().includes(q) || (c.querySelector('.cod') && c.querySelector('.cod').textContent.toLowerCase().includes(q));
     c.classList.toggle('hidden', !m);
     if(m) total++;
   });
