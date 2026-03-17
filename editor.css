@@ -1056,3 +1056,94 @@ body{
 .simp-match-opt:hover{border-color:var(--verde);}
 .simp-match-opt.active{border-color:var(--verde);background:var(--verde-light);color:var(--verde);}
 .simp-match-opt input[type=radio]{accent-color:var(--verde);}
+
+/* ── BARCODE SCANNER ── */
+.btn-scan{
+  display:flex;align-items:center;gap:6px;
+  padding:8px 14px;border-radius:var(--radius-sm);
+  background:var(--verde-light);color:var(--verde);
+  border:1.5px solid transparent;
+  font-family:'DM Sans',sans-serif;font-size:.74rem;font-weight:600;
+  cursor:pointer;white-space:nowrap;
+  transition:background .15s,color .15s,border-color .15s;
+  flex-shrink:0;
+}
+.btn-scan:hover{background:var(--verde);color:#fff;}
+.btn-scan svg{flex-shrink:0;}
+
+.scanner-overlay{
+  position:fixed;inset:0;z-index:700;
+  background:rgba(0,0,0,.7);backdrop-filter:blur(10px);
+  display:flex;align-items:center;justify-content:center;
+  padding:20px;
+  opacity:0;pointer-events:none;transition:opacity .25s;
+}
+.scanner-overlay.open{opacity:1;pointer-events:all;}
+.scanner-modal{
+  background:#fff;border-radius:20px;
+  width:100%;max-width:420px;
+  box-shadow:0 32px 80px rgba(0,0,0,.35);
+  overflow:hidden;
+  transform:translateY(12px) scale(.97);
+  transition:transform .3s cubic-bezier(.2,.8,.2,1);
+}
+.scanner-overlay.open .scanner-modal{transform:translateY(0) scale(1);}
+.scanner-header{
+  display:flex;align-items:center;gap:12px;
+  padding:18px 22px;border-bottom:1px solid var(--border);
+}
+.scanner-header-icon{
+  width:40px;height:40px;border-radius:50%;
+  background:var(--verde-light);
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.15rem;flex-shrink:0;
+}
+.scanner-header h3{
+  font-family:'Playfair Display',serif;
+  font-size:1rem;font-weight:600;color:var(--text);
+  line-height:1.2;
+}
+.scanner-header p{
+  font-size:.7rem;color:var(--muted);margin-top:2px;
+}
+.scanner-body{padding:18px 22px;}
+#scannerReader{
+  border-radius:12px;overflow:hidden;
+  background:#111;min-height:220px;
+  margin-bottom:14px;
+}
+#scannerReader video{border-radius:12px;}
+.scanner-status{
+  font-size:.78rem;font-weight:500;
+  color:var(--mid);text-align:center;
+  padding:8px 12px;border-radius:8px;
+  background:var(--surface2);margin-bottom:12px;
+  transition:all .2s;
+}
+.scanner-status.ready{color:var(--verde);background:var(--verde-light);}
+.scanner-status.success{
+  color:#fff;background:var(--verde);
+  font-weight:600;
+  animation:scanPulse .4s ease;
+}
+.scanner-status.error{color:var(--danger);background:var(--danger-light);}
+@keyframes scanPulse{
+  0%{transform:scale(1);}
+  50%{transform:scale(1.03);}
+  100%{transform:scale(1);}
+}
+.scanner-hints{display:flex;flex-direction:column;gap:4px;}
+.scanner-hint{
+  font-size:.65rem;color:var(--muted);
+  display:flex;align-items:center;gap:6px;
+}
+.scanner-footer{
+  padding:14px 22px;border-top:1px solid var(--border);
+  display:flex;justify-content:flex-end;
+}
+@media(max-width:480px){
+  .scanner-modal{max-width:100%;border-radius:16px;}
+  #scannerReader{min-height:260px;}
+  .btn-scan span{display:none;}
+  .btn-scan{padding:8px 10px;}
+}

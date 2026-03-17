@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="editor.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
   <script src="js/data.js" defer></script>
   <script src="js/ui-helpers.js" defer></script>
   <script src="js/panels.js" defer></script>
@@ -21,6 +22,7 @@
   <script src="js/export.js" defer></script>
   <script src="js/persistence.js" defer></script>
   <script src="js/import.js" defer></script>
+  <script src="js/scanner.js" defer></script>
   <script src="js/viewer.js" defer></script>
   <script src="js/init.js" defer></script>
 </head>
@@ -287,7 +289,19 @@
       </div>
       <div class="field" style="margin-top:2px;">
         <label>Código Externo (GTIN/EAN)</label>
-        <input type="text" id="prodGtin" placeholder="Ex: 7891234567890" style="font-family:'DM Sans',monospace;letter-spacing:.06em;">
+        <div style="display:flex;gap:8px;align-items:center;">
+          <input type="text" id="prodGtin" placeholder="Ex: 7891234567890" style="flex:1;font-family:'DM Sans',monospace;letter-spacing:.06em;">
+          <button type="button" class="btn-scan" onclick="openBarcodeScanner()" title="Escanear código de barras">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
+              <path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/>
+              <path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/>
+              <line x1="7" y1="12" x2="17" y2="12"/>
+              <line x1="7" y1="8" x2="10" y2="8"/><line x1="14" y1="8" x2="17" y2="8"/>
+              <line x1="7" y1="16" x2="10" y2="16"/><line x1="14" y1="16" x2="17" y2="16"/>
+            </svg>
+            <span>Escanear</span>
+          </button>
+        </div>
       </div>
       <div class="field">
         <label>Categoria</label>
@@ -347,6 +361,31 @@
 
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
+
+<!-- BARCODE SCANNER OVERLAY -->
+<div class="scanner-overlay" id="scannerOverlay" onclick="scannerCloseOutside(event)">
+  <div class="scanner-modal">
+    <div class="scanner-header">
+      <div class="scanner-header-icon">📷</div>
+      <div>
+        <h3>Escanear Código de Barras</h3>
+        <p>Aponte a câmera para o código de barras do produto</p>
+      </div>
+      <button class="btn-close" onclick="closeBarcodeScanner()" style="margin-left:auto;">✕</button>
+    </div>
+    <div class="scanner-body">
+      <div id="scannerReader"></div>
+      <div id="scannerStatus" class="scanner-status">Iniciando câmera...</div>
+      <div class="scanner-hints">
+        <div class="scanner-hint">📊 EAN-13 · EAN-8 · UPC · Code 128 · Code 39</div>
+        <div class="scanner-hint">💡 Mantenha o código centralizado na área de leitura</div>
+      </div>
+    </div>
+    <div class="scanner-footer">
+      <button class="btn-sm btn-outline" onclick="closeBarcodeScanner()">Cancelar</button>
+    </div>
+  </div>
+</div>
 
 
 <!-- PRODUCT VIEWER MODAL -->
