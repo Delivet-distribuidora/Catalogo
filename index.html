@@ -57,7 +57,7 @@ nav{position:sticky;top:0;z-index:100;background:rgba(247,243,238,.92);backdrop-
 .details li{font-size:.71rem;color:var(--mid);line-height:1.5;padding:3px 0;border-bottom:1px solid rgba(0,0,0,.04);display:flex;align-items:flex-start;gap:6px;}
 .details li:last-child{border-bottom:none;}
 .details li::before{content:'·';color:var(--acc);font-weight:700;font-size:.9rem;line-height:1.4;flex-shrink:0;}
-.card.hidden{display:none;}.cat-section.all-hidden{display:none;}
+.card.hidden{display:none;}.cat-section.all-hidden{display:none;}.card[data-inactive]{display:none;}
 /* ── Cores e badge de fotos nos cards ── */
 .card-colors{display:flex;gap:5px;flex-wrap:wrap;padding:8px 0 0;}
 .card-color-dot{width:13px;height:13px;border-radius:50%;border:1.5px solid rgba(0,0,0,.09);flex-shrink:0;transition:transform .15s;}
@@ -164,7 +164,7 @@ footer{background:var(--text);color:#fff;padding:48px 48px 32px;}
     </div>
   </div>
   <div class="hero-stats">
-    <div><div class="hstat-num">105</div><div class="hstat-label">Produtos</div></div>
+    <div><div class="hstat-num">107</div><div class="hstat-label">Produtos</div></div>
     <div><div class="hstat-num">5</div><div class="hstat-label">Categorias</div></div>
   </div>
 </div>
@@ -174,7 +174,7 @@ footer{background:var(--text);color:#fff;padding:48px 48px 32px;}
       <div class="section-emoji">🎾</div>
       <div><p class="section-eyebrow">Categoria</p><h2 class="section-title">Brinquedos</h2></div>
     </div>
-    <div class="section-count">67 produtos</div>
+    <div class="section-count">73 produtos</div>
   </div>
   <div class="grid"><div class="card" data-cat="Brinquedos" onclick="openViewer(this)"
       style="--g:135deg,#FFF8E1,#FFE082;--acc:#FFD740;--dark:#C49A00;--tag-bg:#FFF3CD;--tag-c:#8A6500">
@@ -397,6 +397,74 @@ footer{background:var(--text);color:#fff;padding:48px 48px 32px;}
     <ul class="details"><li>Medidas: 20 x 50 cm</li><li>Resistente</li><li>Previne o Tártaro</li></ul>
   </div>
 </div>
+<div class="card" data-cat="Brinquedos" data-inactive="true" onclick="openViewer(this)"
+      style="--g:135deg,#FFF8E1,#FFE082;--acc:#FFD740;--dark:#C49A00;--tag-bg:#FFF3CD;--tag-c:#8A6500">
+  
+  <div class="card-img no-img">
+    <div class="img-glow"></div>
+    <div class="placeholder-emoji">🎾</div>
+  </div>
+  <div class="card-body">
+    <div class="card-top">
+      <span class="cat-tag">🎾 Brinquedos</span>
+      <span class="cod">#4033</span>
+    </div>
+    <h3>Dental Bone Urso</h3>
+    <div class="card-colors"><div class="card-color-dot" style="background:#63B3ED" title="#63B3ED"></div><div class="card-color-dot" style="background:#B794F4" title="#B794F4"></div><div class="card-color-dot" style="background:#F6E05E" title="#F6E05E"></div><div class="card-color-dot" style="background:#68D391" title="#68D391"></div><div class="card-color-dot" style="background:#F6AD55" title="#F6AD55"></div><div class="card-color-dot" style="background:#E53E3E" title="#E53E3E"></div><div class="card-color-dot" style="background:#ED64A6" title="#ED64A6"></div></div>
+    <ul class="details"><li>Previne o Tártaro</li><li>23 cm de cumprimento</li><li>7,5 cm (urso)</li></ul>
+  </div>
+</div>
+<div class="card" data-cat="Brinquedos" data-inactive="true" onclick="openViewer(this)"
+      style="--g:135deg,#FFF8E1,#FFE082;--acc:#FFD740;--dark:#C49A00;--tag-bg:#FFF3CD;--tag-c:#8A6500">
+  
+  <div class="card-img no-img">
+    <div class="img-glow"></div>
+    <div class="placeholder-emoji">🎾</div>
+  </div>
+  <div class="card-body">
+    <div class="card-top">
+      <span class="cat-tag">🎾 Brinquedos</span>
+      <span class="cod">#4030</span>
+    </div>
+    <h3>Dental Bone Osso Médio</h3>
+    <div class="card-colors"><div class="card-color-dot" style="background:#63B3ED" title="#63B3ED"></div><div class="card-color-dot" style="background:#B794F4" title="#B794F4"></div><div class="card-color-dot" style="background:#F6E05E" title="#F6E05E"></div><div class="card-color-dot" style="background:#68D391" title="#68D391"></div><div class="card-color-dot" style="background:#F6AD55" title="#F6AD55"></div><div class="card-color-dot" style="background:#E53E3E" title="#E53E3E"></div><div class="card-color-dot" style="background:#ED64A6" title="#ED64A6"></div></div>
+    <ul class="details"><li>Previne o Tártaro</li><li>23 cm de cumprimento</li><li>10 cm (osso)</li></ul>
+  </div>
+</div>
+<div class="card" data-cat="Brinquedos" data-inactive="true" onclick="openViewer(this)"
+      style="--g:135deg,#FFF8E1,#FFE082;--acc:#FFD740;--dark:#C49A00;--tag-bg:#FFF3CD;--tag-c:#8A6500">
+  
+  <div class="card-img no-img">
+    <div class="img-glow"></div>
+    <div class="placeholder-emoji">🎾</div>
+  </div>
+  <div class="card-body">
+    <div class="card-top">
+      <span class="cat-tag">🎾 Brinquedos</span>
+      <span class="cod">#4030</span>
+    </div>
+    <h3>Dental Bone Coruja 60 mm</h3>
+    <div class="card-colors"><div class="card-color-dot" style="background:#63B3ED" title="#63B3ED"></div><div class="card-color-dot" style="background:#B794F4" title="#B794F4"></div><div class="card-color-dot" style="background:#F6E05E" title="#F6E05E"></div><div class="card-color-dot" style="background:#68D391" title="#68D391"></div><div class="card-color-dot" style="background:#F6AD55" title="#F6AD55"></div><div class="card-color-dot" style="background:#E53E3E" title="#E53E3E"></div><div class="card-color-dot" style="background:#ED64A6" title="#ED64A6"></div></div>
+    <ul class="details"><li>Material Atóxico</li><li>Flutuante</li><li>Previne o Tártaro</li></ul>
+  </div>
+</div>
+<div class="card" data-cat="Brinquedos" data-inactive="true" onclick="openViewer(this)"
+      style="--g:135deg,#FFF8E1,#FFE082;--acc:#FFD740;--dark:#C49A00;--tag-bg:#FFF3CD;--tag-c:#8A6500">
+  
+  <div class="card-img no-img">
+    <div class="img-glow"></div>
+    <div class="placeholder-emoji">🎾</div>
+  </div>
+  <div class="card-body">
+    <div class="card-top">
+      <span class="cat-tag">🎾 Brinquedos</span>
+      <span class="cod">#4030</span>
+    </div>
+    <h3>Dental Bone Bola Lisa 45 mm</h3>
+    <div class="card-colors"><div class="card-color-dot" style="background:#63B3ED" title="#63B3ED"></div><div class="card-color-dot" style="background:#B794F4" title="#B794F4"></div><div class="card-color-dot" style="background:#F6E05E" title="#F6E05E"></div><div class="card-color-dot" style="background:#68D391" title="#68D391"></div><div class="card-color-dot" style="background:#F6AD55" title="#F6AD55"></div><div class="card-color-dot" style="background:#E53E3E" title="#E53E3E"></div><div class="card-color-dot" style="background:#ED64A6" title="#ED64A6"></div></div>
+    <ul class="details"><li>Material Atóxico</li><li>Flutuante</li><li>Previne o Tártaro</li></ul>
+  </div>
+</div>
 <div class="card" data-cat="Brinquedos" onclick="openViewer(this)"
       style="--g:135deg,#FFF8E1,#FFE082;--acc:#FFD740;--dark:#C49A00;--tag-bg:#FFF3CD;--tag-c:#8A6500">
   
@@ -463,6 +531,40 @@ footer{background:var(--text);color:#fff;padding:48px 48px 32px;}
     <h3>Anel Mordedor P</h3>
     <div class="card-colors"><div class="card-color-dot" style="background:#68D391" title="#68D391"></div><div class="card-color-dot" style="background:#76E4F7" title="#76E4F7"></div><div class="card-color-dot" style="background:#ED64A6" title="#ED64A6"></div><div class="card-color-dot" style="background:#1E1A16" title="#1E1A16"></div><div class="card-color-dot" style="background:#B794F4" title="#B794F4"></div><div class="card-color-dot" style="background:#F6AD55" title="#F6AD55"></div><div class="card-color-dot" style="background:#F6E05E" title="#F6E05E"></div><div class="card-color-dot" style="background:#E53E3E" title="#E53E3E"></div><div class="card-color-dot" style="background:#493ee5" title="#493ee5"></div></div>
     <ul class="details"><li>Para pequeno porte</li><li>12 cm</li><li>Material: Borracha maciça atóxica, resistente e durável.</li><li>Função: Satisfaz o instinto natural de mastigar, ajuda na limpeza dos dentes e massageia a gengiva.</li></ul>
+  </div>
+</div>
+<div class="card" data-cat="Brinquedos" data-inactive="true" onclick="openViewer(this)"
+      style="--g:135deg,#FFF8E1,#FFE082;--acc:#FFD740;--dark:#C49A00;--tag-bg:#FFF3CD;--tag-c:#8A6500">
+  
+  <div class="card-img no-img">
+    <div class="img-glow"></div>
+    <div class="placeholder-emoji">🎾</div>
+  </div>
+  <div class="card-body">
+    <div class="card-top">
+      <span class="cat-tag">🎾 Brinquedos</span>
+      <span class="cod">#4012</span>
+    </div>
+    <h3>Haltere Grande</h3>
+    <div class="card-colors"><div class="card-color-dot" style="background:#68D391" title="#68D391"></div><div class="card-color-dot" style="background:#76E4F7" title="#76E4F7"></div><div class="card-color-dot" style="background:#ED64A6" title="#ED64A6"></div><div class="card-color-dot" style="background:#1E1A16" title="#1E1A16"></div><div class="card-color-dot" style="background:#B794F4" title="#B794F4"></div><div class="card-color-dot" style="background:#F6AD55" title="#F6AD55"></div><div class="card-color-dot" style="background:#F6E05E" title="#F6E05E"></div><div class="card-color-dot" style="background:#E53E3E" title="#E53E3E"></div><div class="card-color-dot" style="background:#493ee5" title="#493ee5"></div></div>
+    <ul class="details"><li>Para pequeno porte</li><li>18 cm</li><li>Material: Borracha maciça atóxica, resistente e durável.</li><li>Função: Satisfaz o instinto natural de mastigar</li></ul>
+  </div>
+</div>
+<div class="card" data-cat="Brinquedos" data-inactive="true" onclick="openViewer(this)"
+      style="--g:135deg,#FFF8E1,#FFE082;--acc:#FFD740;--dark:#C49A00;--tag-bg:#FFF3CD;--tag-c:#8A6500">
+  
+  <div class="card-img no-img">
+    <div class="img-glow"></div>
+    <div class="placeholder-emoji">🎾</div>
+  </div>
+  <div class="card-body">
+    <div class="card-top">
+      <span class="cat-tag">🎾 Brinquedos</span>
+      <span class="cod">#4012</span>
+    </div>
+    <h3>Haltere Pequeno</h3>
+    <div class="card-colors"><div class="card-color-dot" style="background:#68D391" title="#68D391"></div><div class="card-color-dot" style="background:#76E4F7" title="#76E4F7"></div><div class="card-color-dot" style="background:#ED64A6" title="#ED64A6"></div><div class="card-color-dot" style="background:#1E1A16" title="#1E1A16"></div><div class="card-color-dot" style="background:#B794F4" title="#B794F4"></div><div class="card-color-dot" style="background:#F6AD55" title="#F6AD55"></div><div class="card-color-dot" style="background:#F6E05E" title="#F6E05E"></div><div class="card-color-dot" style="background:#E53E3E" title="#E53E3E"></div><div class="card-color-dot" style="background:#493ee5" title="#493ee5"></div></div>
+    <ul class="details"><li>Para pequeno porte</li><li>9,5 cm</li><li>Material: Borracha maciça atóxica, resistente e durável.</li><li>Função: Satisfaz o instinto natural de mastigar</li></ul>
   </div>
 </div>
 <div class="card" data-cat="Brinquedos" onclick="openViewer(this)"
@@ -1552,9 +1654,26 @@ footer{background:var(--text);color:#fff;padding:48px 48px 32px;}
       <div class="section-emoji">🥣</div>
       <div><p class="section-eyebrow">Categoria</p><h2 class="section-title">Alimentação e Hidratação</h2></div>
     </div>
-    <div class="section-count">10 produtos</div>
+    <div class="section-count">11 produtos</div>
   </div>
   <div class="grid"><div class="card" data-cat="Alimentação e Hidratação" onclick="openViewer(this)"
+      style="--g:135deg,#FFF0E8,#FFAB91;--acc:#FF7043;--dark:#BF360C;--tag-bg:#FFD8C8;--tag-c:#8A2800">
+  
+  <div class="card-img no-img">
+    <div class="img-glow"></div>
+    <div class="placeholder-emoji">🥣</div>
+  </div>
+  <div class="card-body">
+    <div class="card-top">
+      <span class="cat-tag">🥣 Alimentação e Hidratação</span>
+      <span class="cod">#30028</span>
+    </div>
+    <h3>Tigela Dupla com Orelhinha (verificar)</h3>
+    <div class="card-colors"><div class="card-color-dot" style="background:#ededed" title="#ededed"></div><div class="card-color-dot" style="background:#F6E05E" title="#F6E05E"></div><div class="card-color-dot" style="background:#ffcbc2" title="#ffcbc2"></div></div>
+    <ul class="details"><li>Base antiderrapante</li><li>Capacidade: 500ml</li><li>Medidas: 20 x 11 x 30 cm</li></ul>
+  </div>
+</div>
+<div class="card" data-cat="Alimentação e Hidratação" onclick="openViewer(this)"
       style="--g:135deg,#FFF0E8,#FFAB91;--acc:#FF7043;--dark:#BF360C;--tag-bg:#FFD8C8;--tag-c:#8A2800">
   
   <div class="card-img has-img">
@@ -1944,7 +2063,7 @@ footer{background:var(--text);color:#fff;padding:48px 48px 32px;}
       <div class="section-emoji">🛍️</div>
       <div><p class="section-eyebrow">Categoria</p><h2 class="section-title">Utilidades e Acessórios</h2></div>
     </div>
-    <div class="section-count">3 produtos</div>
+    <div class="section-count">4 produtos</div>
   </div>
   <div class="grid"><div class="card" data-cat="Utilidades e Acessórios" onclick="openViewer(this)"
       style="--g:135deg,#FBF5EC,#F0D4A0;--acc:#D4A054;--dark:#8A5010;--tag-bg:#EDD8B0;--tag-c:#5A3000">
@@ -1961,6 +2080,23 @@ footer{background:var(--text);color:#fff;padding:48px 48px 32px;}
     <h3>Kit Refil Cata Caca C/ 03 Unid</h3>
     <div class="card-colors"><div class="card-color-dot" style="background:[object Object]" title="[object Object]"></div></div>
     <ul class="details"><li>3 unidades por rolo</li><li>20 sacos por rolo</li><li>Resistente</li></ul>
+  </div>
+</div>
+<div class="card" data-cat="Utilidades e Acessórios" onclick="openViewer(this)"
+      style="--g:135deg,#FBF5EC,#F0D4A0;--acc:#D4A054;--dark:#8A5010;--tag-bg:#EDD8B0;--tag-c:#5A3000">
+  
+  <div class="card-img no-img">
+    <div class="img-glow"></div>
+    <div class="placeholder-emoji">🛍️</div>
+  </div>
+  <div class="card-body">
+    <div class="card-top">
+      <span class="cat-tag">🛍️ Utilidades e Acessórios</span>
+      <span class="cod">#30042</span>
+    </div>
+    <h3>Refil Cata Caca com Blister</h3>
+    <div class="card-colors"><div class="card-color-dot" style="background:[object Object]" title="[object Object]"></div></div>
+    <ul class="details"><li>Refil Cata Caca com</li><li>1 rolo com 20 sacos</li><li>Prático para reposição</li></ul>
   </div>
 </div>
 <div class="card" data-cat="Utilidades e Acessórios" onclick="openViewer(this)"
