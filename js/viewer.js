@@ -81,6 +81,15 @@ function pvRender() {
   }
 
   // Text + specs
+  const activeTags = normalizeProductTags(p.tags).filter(tag => tag.active !== false);
+  const pvImgBadge = document.getElementById('pvImgBadge');
+  if(activeTags.length) {
+    pvImgBadge.textContent = activeTags[0].label;
+    pvImgBadge.style.display = 'inline-flex';
+  } else {
+    pvImgBadge.textContent = '';
+    pvImgBadge.style.display = 'none';
+  }
   document.getElementById('pvBadge').textContent = cfg.emoji + ' ' + p.categoria;
   document.getElementById('pvName').textContent  = p.nome;
   document.getElementById('pvCod').innerHTML   = (p.codigo ? '#' + p.codigo : '') + (p.gtin ? '<span style="display:block;font-size:.65rem;color:#8B7355;margin-top:2px;" title="GTIN/EAN">⊟ ' + p.gtin + '</span>' : '');
@@ -215,6 +224,4 @@ document.addEventListener('keydown', function(e) {
   }
 });
 
-
-init();
 

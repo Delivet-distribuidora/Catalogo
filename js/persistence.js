@@ -102,20 +102,23 @@ function applySettingsToUI() {
   sv('colorVerde',     s.colorVerde);    sv('colorVerdeHex',  s.colorVerde);
   sv('colorLaranja',   s.colorLaranja);  sv('colorLaranjaHex',s.colorLaranja);
   sv('colorBg',        s.colorBg);       sv('colorBgHex',     s.colorBg);
+  var wm=document.getElementById('watermarkOpacity');
+  if(wm) wm.value = Math.round((s.watermarkOpacity != null ? s.watermarkOpacity : 0.18) * 100);
   var sw1=document.getElementById('sw1'),
       sw2=document.getElementById('sw2'),
       sw3=document.getElementById('sw3');
   if(sw1&&s.colorVerde)   sw1.style.background=s.colorVerde;
   if(sw2&&s.colorLaranja) sw2.style.background=s.colorLaranja;
   if(sw3&&s.colorBg)      sw3.style.background=s.colorBg;
-  var logo=document.getElementById('sidebarLogo');
-  if(logo) logo.innerHTML=(s.siteName||'DeliVet')+'<span>.</span>';
+  var logoImg=document.querySelector('#sidebarLogo .sidebar-logo-img');
+  if(logoImg) logoImg.alt = s.siteName || 'DeliVet';
   if(s.logoImg) {
     var p=document.getElementById('logoPreview');
     if(p){p.src=s.logoImg;p.style.display='block';}
   }
   // Sincroniza swatches e inputs de cor
   if(typeof updateColorPreview === 'function') updateColorPreview();
+  if(typeof updateWatermarkPreview === 'function') updateWatermarkPreview();
 }
 
 function showSaveIndicator() {

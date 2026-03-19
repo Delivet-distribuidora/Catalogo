@@ -31,15 +31,15 @@ function renderCatEditor() {
         <div class="field">
           <label>Cor de Fundo</label>
           <div class="color-row">
-            <input type="color" value="${cfg.color}" onchange="catConfig['${cat}'].color=this.value">
-            <input type="text" value="${cfg.color}" oninput="if(/^#[0-9A-Fa-f]{6}$/.test(this.value))catConfig['${cat}'].color=this.value">
+            <input type="color" value="${cfg.color}" onchange="updateCategoryColor('${cat.replace(/'/g, "\\'")}', 'color', this.value)">
+            <input type="text" value="${cfg.color}" oninput="updateCategoryColor('${cat.replace(/'/g, "\\'")}', 'color', this.value)">
           </div>
         </div>
         <div class="field">
           <label>Cor de Destaque</label>
           <div class="color-row">
-            <input type="color" value="${cfg.accent}" onchange="catConfig['${cat}'].accent=this.value">
-            <input type="text" value="${cfg.accent}" oninput="if(/^#[0-9A-Fa-f]{6}$/.test(this.value))catConfig['${cat}'].accent=this.value">
+            <input type="color" value="${cfg.accent}" onchange="updateCategoryColor('${cat.replace(/'/g, "\\'")}', 'accent', this.value)">
+            <input type="text" value="${cfg.accent}" oninput="updateCategoryColor('${cat.replace(/'/g, "\\'")}', 'accent', this.value)">
           </div>
         </div>
         <div class="field">
@@ -59,6 +59,39 @@ function renderCatEditor() {
     </div>`;
   // Also update the catFilter dropdown and prodCategoria dropdown
   updateCatDropdowns();
+}
+
+function updateCategoryColor(cat, field, value) {
+  if(!catConfig[cat]) return;
+  if(!/^#[0-9A-Fa-f]{6}$/.test(value || '')) return;
+  catConfig[cat][field] = value;
+  refreshCategoryDerivedColors(cat);
+  renderCatEditor();
+  filterProducts();
+  dbSaveSettings();
+}
+
+function refreshCategoryDerivedColors(cat) {
+  const cfg = catConfig[cat];
+  if(!cfg) return;
+  const base = cfg.color || '#F0F0F0';
+  const accent = cfg.accent || '#666666';
+  cfg.dark = shiftHex(accent, -38);
+  cfg.gradient = '135deg,' + base + ',' + shiftHex(base, -18);
+  cfg.tag_bg = shiftHex(base, -10);
+  cfg.tag_c = shiftHex(accent, -42);
+}
+
+function shiftHex(hex, amount) {
+  const clean = String(hex || '').replace('#', '');
+  if(!/^[0-9A-Fa-f]{6}$/.test(clean)) return hex;
+  const parts = [0, 2, 4].map(function(i) {
+    const n = parseInt(clean.slice(i, i + 2), 16);
+    return Math.max(0, Math.min(255, n + amount));
+  });
+  return '#' + parts.map(function(n) {
+    return n.toString(16).padStart(2, '0');
+  }).join('').toUpperCase();
 }
 
 function toggleCategory(cat) {

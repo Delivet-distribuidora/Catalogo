@@ -195,12 +195,12 @@ function simpMatchChange() {
 // Presets de campos
 function simpPreset(preset) {
   var map = {
-    'only-titles':  { nome:1, codigo:1, categoria:0, detalhes:0, colors:0, img:0, gallery:0 },
-    'only-colors':  { nome:0, codigo:0, categoria:0, detalhes:0, colors:1, img:0, gallery:0 },
-    'only-info':    { nome:0, codigo:0, categoria:0, detalhes:1, colors:0, img:0, gallery:0 },
-    'only-images':  { nome:0, codigo:0, categoria:0, detalhes:0, colors:0, img:1, gallery:1 },
-    'no-images':    { nome:1, codigo:1, categoria:1, detalhes:1, colors:1, img:0, gallery:0 },
-    'all':          { nome:1, codigo:1, categoria:1, detalhes:1, colors:1, img:1, gallery:1 }
+    'only-titles':  { nome:1, codigo:1, categoria:0, tags:0, detalhes:0, colors:0, img:0, gallery:0 },
+    'only-colors':  { nome:0, codigo:0, categoria:0, tags:0, detalhes:0, colors:1, img:0, gallery:0 },
+    'only-info':    { nome:0, codigo:0, categoria:0, tags:1, detalhes:1, colors:0, img:0, gallery:0 },
+    'only-images':  { nome:0, codigo:0, categoria:0, tags:0, detalhes:0, colors:0, img:1, gallery:1 },
+    'no-images':    { nome:1, codigo:1, categoria:1, tags:1, detalhes:1, colors:1, img:0, gallery:0 },
+    'all':          { nome:1, codigo:1, categoria:1, tags:1, detalhes:1, colors:1, img:1, gallery:1 }
   };
   var cfg = map[preset];
   if(!cfg) return;
@@ -253,6 +253,7 @@ function simpUpdateSummary() {
     if(mergeMode === 'fields') {
       var fields = _simpActiveFields();
       var fieldLabels = { nome:'Títulos', codigo:'Códigos', categoria:'Categorias', detalhes:'Informações', colors:'Cores', img:'Imagem', gallery:'Galeria' };
+      fieldLabels.tags = 'Tags';
       if(fields.length === 0) {
         var cf = document.createElement('span'); cf.className='simp-sum-chip';
         cf.style.background='rgba(229,62,62,.12)'; cf.style.color='var(--danger)';
@@ -431,6 +432,7 @@ async function importFromGitHubPages() {
     var nomeEl    = card.querySelector('h3');
     var catEl     = card.querySelector('.cat-tag');
     var codEl     = card.querySelector('.cod');
+    var tagEls    = card.querySelectorAll('.prod-tag');
     var detsEl    = card.querySelectorAll('.details li');
     var colorDots = card.querySelectorAll('.card-color-dot');
 
@@ -443,6 +445,12 @@ async function importFromGitHubPages() {
 
     var detalhes = [];
     detsEl.forEach(function(li) { var t = li.textContent.trim(); if (t) detalhes.push(t); });
+
+    var tags = [];
+    tagEls.forEach(function(tagEl) {
+      var text = tagEl.textContent.trim();
+      if(text) tags.push({ label: text, active: true });
+    });
 
     var colors = [];
     colorDots.forEach(function(dot) { if (dot.style.background) colors.push(dot.style.background); });
@@ -458,7 +466,7 @@ async function importFromGitHubPages() {
     imported.push({
       id: Date.now().toString(36) + Math.random().toString(36).slice(2),
       nome: nome, codigo: codigo, categoria: categoria,
-      detalhes: detalhes, colors: colors,
+      tags: tags, detalhes: detalhes, colors: colors,
       img: null, gallery: [],
       ativo: inactive ? false : true,
       _mediaSrcs: mediaSrcs

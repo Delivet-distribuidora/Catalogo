@@ -1,15 +1,17 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DeliVet — Editor do Catálogo</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,400&family=DM+Sans:wght@300;400;500;600&family=Pacifico&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DeliVet — Editor do Catálogo</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,400&family=DM+Sans:wght@300;400;500;600&family=Pacifico&display=swap"
+    rel="stylesheet">
 
   <link rel="stylesheet" href="editor.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
-  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
   <script src="js/data.js" defer></script>
   <script src="js/ui-helpers.js" defer></script>
   <script src="js/panels.js" defer></script>
@@ -22,631 +24,669 @@
   <script src="js/export.js" defer></script>
   <script src="js/persistence.js" defer></script>
   <script src="js/import.js" defer></script>
-  <script src="js/scanner.js" defer></script>
   <script src="js/viewer.js" defer></script>
   <script src="js/init.js" defer></script>
 </head>
+
 <body>
-<div class="app">
+  <div class="app">
 
-<!-- ── SIDEBAR ── -->
-<aside class="sidebar">
-  <div class="sidebar-logo">
-    <div class="logo-mark" id="sidebarLogo">DeliVet<span>.</span></div>
-    <div class="logo-sub">Editor do Catálogo</div>
-  </div>
-  <nav class="sidebar-nav">
-    <div class="nav-section-label">Editor</div>
-    <div class="nav-item active" onclick="showPanel('produtos')">
-      <span class="icon">📦</span> Produtos
-      <span class="count" id="countAll">95</span>
-    </div>
-    <div class="nav-item" onclick="showPanel('settings')">
-      <span class="icon">⚙️</span> Identidade Visual
-    </div>
-    <div class="nav-item" onclick="showPanel('categorias')">
-      <span class="icon">🏷️</span> Categorias
-    </div>
+    <!-- ── SIDEBAR ── -->
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <div class="logo-mark" id="sidebarLogo">
+          <img src="d-dog.png" alt="D-Dog" class="sidebar-logo-img">
+        </div>
+        <div class="logo-sub">Editor do Catálogo</div>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="nav-section-label">Editor</div>
+        <div class="nav-item active" onclick="showPanel('produtos')">
+          <span class="icon">📦</span> Produtos
+          <span class="count" id="countAll">0</span>
+        </div>
+        <div class="nav-item" onclick="showPanel('settings')">
+          <span class="icon">⚙️</span> Identidade Visual
+        </div>
+        <div class="nav-item" onclick="showPanel('categorias')">
+          <span class="icon">🏷️</span> Categorias
+        </div>
 
-    <div class="nav-section-label">Categorias</div>
-    <div id="sidebarCatList"></div>
-  </nav>
-  <div class="sidebar-footer">
-    <div id="saveStatus" style="font-size:.62rem;color:rgba(255,255,255,.3);padding:0 4px 10px;text-align:center;letter-spacing:.04em;">
-      ○ Nenhuma alteração salva
-    </div>
-    <button class="btn-export" onclick="exportCatalog()">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-      Exportar Catálogo
-    </button>
-    <div class="sidebar-footer-grid">
-      <button class="btn-sidebar backup" onclick="exportBackupJSON()" title="Salvar backup JSON portátil">
-        💾 Backup JSON
-      </button>
-      <button class="btn-sidebar import" onclick="document.getElementById('importJSONInput').click()" title="Importar backup JSON (seletivo)">
-        📂 Importar JSON
-      </button>
-    </div>
-    <button class="btn-sidebar catalog" onclick="importFromGitHubPages()" title="Carregar catálogo publicado no GitHub Pages">
-      🌐 Carregar do GitHub Pages
-    </button>
-    <input type="file" id="importJSONInput" accept=".json" style="display:none" onchange="openSelectiveImport(event)">
-    <button class="btn-sidebar danger" onclick="dbClearAll()">
-      🗑 Limpar dados salvos
-    </button>
-  </div>
-</aside>
-
-<!-- ── MAIN ── -->
-<div class="main" id="mainArea">
-
-  <!-- ══ PANEL: PRODUTOS ══ -->
-  <div id="panelProdutos">
-    <div class="topbar">
-      <div class="topbar-title">Gerenciar <em>Produtos</em></div>
-      <span id="saveIndicator" style="font-size:.72rem;color:var(--verde);opacity:0;transition:opacity .4s;margin-left:4px;font-weight:500;">✓ Salvo</span>
-      <div class="topbar-actions">
-        <button class="btn-sm btn-primary" onclick="openAddModal()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          Novo Produto
+        <div class="nav-section-label">Categorias</div>
+        <div id="sidebarCatList"></div>
+      </nav>
+      <div class="sidebar-footer">
+        <div id="saveStatus"
+          style="font-size:.62rem;color:rgba(255,255,255,.3);padding:0 4px 10px;text-align:center;letter-spacing:.04em;">
+          ○ Nenhuma alteração salva
+        </div>
+        <button class="btn-export" onclick="exportCatalog()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+            <polyline points="7 10 12 15 17 10" />
+            <line x1="12" y1="15" x2="12" y2="3" />
+          </svg>
+          Exportar Catálogo
         </button>
-      </div>
-    </div>
-    <div class="panel">
-      <div class="product-toolbar">
-        <div class="search-box">
-          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-          <input type="text" id="prodSearch" placeholder="Buscar produto..." oninput="filterProducts()">
-        </div>
-        <select class="filter-select" id="catFilter" onchange="filterProducts()">
-          <option value="">Todas as categorias</option>
-          <option>Brinquedos</option>
-          <option>Passeio (Guias e Peitorais)</option>
-          <option>Alimentação e Hidratação</option>
-          <option>Higiene e Estética</option>
-          <option>Outros</option>
-          <option>Utilidades e Acessórios</option>
-        </select>
-        <select class="filter-select" id="imgFilter" onchange="filterProducts()">
-          <option value="">Todas as imagens</option>
-          <option value="has">Com imagem</option>
-          <option value="no">Sem imagem</option>
-        </select>
-      </div>
-      <div class="product-grid" id="productGrid"></div>
-    </div>
-  </div>
-
-  <!-- ══ PANEL: SETTINGS ══ -->
-  <div id="panelSettings" style="display:none">
-    <div class="topbar">
-      <div class="topbar-title">Identidade <em>Visual</em></div>
-      <div class="topbar-actions">
-        <button class="btn-sm btn-primary" onclick="saveSettings()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-          Salvar Configurações
-        </button>
-      </div>
-    </div>
-    <div class="panel">
-      <div class="settings-grid">
-
-        <!-- Logo & Nome -->
-        <div class="settings-card">
-          <h3>Logo & Nome da Marca</h3>
-          <p class="hint">Aparece no topo do catálogo e no rodapé</p>
-          <div class="field">
-            <label>Nome da Marca</label>
-            <input type="text" id="siteName" value="DeliVet" oninput="updatePreview()">
-          </div>
-          <div class="field">
-            <label>Slogan / Tagline</label>
-            <input type="text" id="siteTagline" value="Distribuidora Pet Shop" oninput="updatePreview()">
-          </div>
-          <div class="field">
-            <label>Logo (imagem)</label>
-            <div class="upload-area" id="logoUploadArea">
-              <input type="file" accept="image/*" onchange="handleLogoUpload(event)">
-              <img class="logo-preview" id="logoPreview" src="" alt="Logo">
-              <div class="upload-icon">🖼️</div>
-              <p>Arraste ou <strong>clique para enviar</strong></p>
-              <p style="font-size:.65rem;margin-top:4px">PNG, SVG ou JPG recomendado</p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Cores -->
-        <div class="settings-card">
-          <h3>Paleta de Cores</h3>
-          <p class="hint">Cores principais do catálogo</p>
-          <div class="field">
-            <label>Cor Principal (Verde)</label>
-            <div class="color-row">
-              <input type="color" id="colorVerde" value="#3A8F62" oninput="updateColorPreview()">
-              <input type="text" id="colorVerdeHex" value="#3A8F62" oninput="syncColorFromText('colorVerde','colorVerdeHex')">
-            </div>
-          </div>
-          <div class="field">
-            <label>Cor de Destaque (Laranja)</label>
-            <div class="color-row">
-              <input type="color" id="colorLaranja" value="#E8602A" oninput="updateColorPreview()">
-              <input type="text" id="colorLaranjaHex" value="#E8602A" oninput="syncColorFromText('colorLaranja','colorLaranjaHex')">
-            </div>
-          </div>
-          <div class="field">
-            <label>Cor de Fundo</label>
-            <div class="color-row">
-              <input type="color" id="colorBg" value="#F7F3EE" oninput="updateColorPreview()">
-              <input type="text" id="colorBgHex" value="#F7F3EE" oninput="syncColorFromText('colorBg','colorBgHex')">
-            </div>
-          </div>
-          <!-- Live preview swatch -->
-          <div style="margin-top:16px;">
-            <div class="field"><label>Pré-visualização</label></div>
-            <div id="colorSwatch" style="display:flex;gap:8px;align-items:center;">
-              <div id="sw1" style="width:36px;height:36px;border-radius:8px;background:#3A8F62;"></div>
-              <div id="sw2" style="width:36px;height:36px;border-radius:8px;background:#E8602A;"></div>
-              <div id="sw3" style="width:36px;height:36px;border-radius:8px;background:#F7F3EE;border:1px solid #ccc;"></div>
-              <span style="font-size:.72rem;color:var(--muted);margin-left:4px;">Principal · Destaque · Fundo</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Hero -->
-        <div class="settings-card">
-          <h3>Banner Hero</h3>
-          <p class="hint">Seção de destaque no topo do catálogo</p>
-          <div class="field">
-            <label>Título (linha 1)</label>
-            <input type="text" id="heroLine1" value="Produtos para">
-          </div>
-          <div class="field">
-            <label>Título (linha 2)</label>
-            <input type="text" id="heroLine2" value="quem ama de">
-          </div>
-          <div class="field">
-            <label>Título (destaque itálico)</label>
-            <input type="text" id="heroLine3" value="verdade">
-          </div>
-          <div class="field">
-            <label>Descrição</label>
-            <textarea id="heroDesc">Brinquedos, acessórios de passeio, higiene e muito mais — tudo pensado para o bem-estar e felicidade do seu pet.</textarea>
-          </div>
-        </div>
-
-        <!-- Contato -->
-        <div class="settings-card">
-          <h3>Informações de Contato</h3>
-          <p class="hint">Exibidas no rodapé do catálogo</p>
-          <div class="field">
-            <label>WhatsApp</label>
-            <input type="text" id="contWhatsapp" value="(11) 99999-0000">
-          </div>
-          <div class="field">
-            <label>E-mail</label>
-            <input type="text" id="contEmail" value="vendas@delivet.com.br">
-          </div>
-          <div class="field">
-            <label>Instagram</label>
-            <input type="text" id="contInsta" value="@delivet.petshop">
-          </div>
-          <div class="field">
-            <label>Rodapé (texto copyright)</label>
-            <input type="text" id="contCopy" value="© 2025 DeliVet · Todos os direitos reservados">
-          </div>
-        </div>
-
-      </div>
-    </div>
-  </div>
-
-  <!-- ══ PANEL: CATEGORIAS ══ -->
-  <div id="panelCategorias" style="display:none">
-    <div class="topbar">
-      <div class="topbar-title">Gerenciar <em>Categorias</em></div>
-    </div>
-    <div class="panel">
-      <div id="catEditorList"></div>
-    </div>
-  </div>
-
-</div><!-- /main -->
-</div><!-- /app -->
-
-<!-- ── MODAL EDITAR/ADICIONAR PRODUTO ── -->
-<div class="modal-overlay" id="modalOverlay" onclick="closeModalOutside(event)">
-  <div class="modal">
-    <div class="modal-header">
-      <h2 id="modalTitle">Editar Produto</h2>
-      <button class="btn-close" onclick="closeModal()">✕</button>
-    </div>
-    <div class="modal-body">
-      <!-- ── GALERIA DE FOTOS ── -->
-      <div class="gallery-section">
-        <div class="gallery-section-label">
-          Fotos do Produto
-          <span id="galleryCount">0 mídia(s)</span>
-        </div>
-        <div class="gallery-grid" id="galleryGrid">
-          <!-- thumbs gerados por JS -->
-          <label class="gallery-add-btn" id="galleryAddBtn" title="Adicionar foto">
-            <input type="file" accept="image/*,video/webm" multiple onchange="handleGalleryAdd(event)">
-            <div class="add-icon">＋</div>
-            <span>Adicionar foto</span>
-          </label>
-        </div>
-      </div>
-
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
-        <div class="field">
-          <label>Nome do Produto</label>
-          <input type="text" id="prodNome" placeholder="Ex: Bola Lisa 55 mm">
-        </div>
-        <div class="field">
-          <label>Código</label>
-          <input type="text" id="prodCodigo" placeholder="Ex: 4003">
-        </div>
-      </div>
-      <div class="field" style="margin-top:2px;">
-        <label>Código Externo (GTIN/EAN)</label>
-        <div style="display:flex;gap:8px;align-items:center;">
-          <input type="text" id="prodGtin" placeholder="Ex: 7891234567890" style="flex:1;font-family:'DM Sans',monospace;letter-spacing:.06em;">
-          <button type="button" class="btn-scan" onclick="openBarcodeScanner()" title="Escanear código de barras">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
-              <path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/>
-              <path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/>
-              <line x1="7" y1="12" x2="17" y2="12"/>
-              <line x1="7" y1="8" x2="10" y2="8"/><line x1="14" y1="8" x2="17" y2="8"/>
-              <line x1="7" y1="16" x2="10" y2="16"/><line x1="14" y1="16" x2="17" y2="16"/>
-            </svg>
-            <span>Escanear</span>
+        <div class="sidebar-footer-grid">
+          <button class="btn-sidebar backup" onclick="exportBackupJSON()" title="Salvar backup JSON portátil">
+            💾 Backup JSON
+          </button>
+          <button class="btn-sidebar import" onclick="document.getElementById('importJSONInput').click()"
+            title="Importar backup JSON (seletivo)">
+            📂 Importar JSON
           </button>
         </div>
-      </div>
-      <div class="field">
-        <label>Categoria</label>
-        <select id="prodCategoria">
-          <option>Brinquedos</option>
-          <option>Passeio (Guias e Peitorais)</option>
-          <option>Alimentação e Hidratação</option>
-          <option>Higiene e Estética</option>
-          <option>Outros</option>
-          <option>Utilidades e Acessórios</option>
-        </select>
-      </div>
-
-      <div class="divider"></div>
-
-      <!-- ── CORES DISPONÍVEIS ── -->
-      <div class="prod-colors-section">
-        <div class="field">
-          <label>Cores Disponíveis</label>
-        </div>
-        <div class="prod-colors-row" id="prodColorsRow"></div>
-        <div class="color-add-row">
-          <input type="color" id="newColorPicker" value="#3A8F62" title="Escolher cor">
-          <input type="text" id="newColorHex" placeholder="#3A8F62" maxlength="7">
-          <button class="btn-add-color" onclick="addProdColor()">+ Adicionar cor</button>
-        </div>
-        <div class="color-presets" id="colorPresets"></div>
-      </div>
-
-      <div class="divider"></div>
-      <div class="field">
-        <label>Detalhes / Especificações</label>
-        <div class="details-list" id="detailsList"></div>
-        <button class="btn-add-detail" onclick="addDetail()">
-          + Adicionar especificação
+        <button class="btn-sidebar catalog" onclick="importFromGitHubPages()"
+          title="Carregar catálogo publicado no GitHub Pages">
+          🌐 Carregar do GitHub Pages
+        </button>
+        <input type="file" id="importJSONInput" accept=".json" style="display:none"
+          onchange="openSelectiveImport(event)">
+        <button class="btn-sidebar danger" onclick="dbClearAll()">
+          🗑 Limpar dados salvos
         </button>
       </div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn-sm btn-danger" id="btnDelete" onclick="deleteProduct()" style="margin-right:5px;">
-        🗑 Excluir
-      </button>
-      <button class="btn-sm" id="btnDuplicate" onclick="duplicateProduct()" style="margin-right:5px; background-color:#718096; color:white; border:none;">
-        📋 Duplicar
-      </button>
-      <button class="btn-sm" id="btnToggleActive" onclick="toggleProductActive()" style="margin-right:auto; background-color:#D69E2E; color:white; border:none;">
-        ⏸ Desativar
-      </button>
-      <button class="btn-sm btn-outline" onclick="closeModal()">Cancelar</button>
-      <button class="btn-sm btn-primary" onclick="saveProduct()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 0-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-        Salvar Produto
-      </button>
-    </div>
-  </div>
-</div>
+    </aside>
 
-<!-- TOAST -->
-<div class="toast" id="toast"></div>
+    <!-- ── MAIN ── -->
+    <div class="main" id="mainArea">
 
-<!-- BARCODE SCANNER OVERLAY -->
-<div class="scanner-overlay" id="scannerOverlay" onclick="scannerCloseOutside(event)">
-  <div class="scanner-modal">
-    <div class="scanner-header">
-      <div class="scanner-header-icon">📷</div>
-      <div>
-        <h3>Escanear Código de Barras</h3>
-        <p>Aponte a câmera para o código de barras do produto</p>
-      </div>
-      <button class="btn-close" onclick="closeBarcodeScanner()" style="margin-left:auto;">✕</button>
-    </div>
-    <div class="scanner-body">
-      <div id="scannerReader"></div>
-      <div id="scannerStatus" class="scanner-status">Iniciando câmera...</div>
-      <div class="scanner-hints">
-        <div class="scanner-hint">📊 EAN-13 · EAN-8 · UPC · Code 128 · Code 39</div>
-        <div class="scanner-hint">💡 Mantenha o código centralizado na área de leitura</div>
-      </div>
-    </div>
-    <div class="scanner-footer">
-      <button class="btn-sm btn-outline" onclick="closeBarcodeScanner()">Cancelar</button>
-    </div>
-  </div>
-</div>
-
-
-<!-- PRODUCT VIEWER MODAL -->
-<div class="pv-overlay" id="pvOverlay" onclick="pvCloseOutside(event)">
-  <div class="pv-modal" id="pvModal">
-    <button class="pv-close" onclick="pvClose()">✕</button>
-    <div class="pv-img-side" id="pvImgSide">
-      <div class="pv-glow"></div>
-      <img id="pvImg" src="" alt="" style="display:none">
-      <div class="pv-ph" id="pvPh"></div>
-      <!-- setas de galeria -->
-      <button class="pv-img-arrow prev" id="pvGalleryPrev" onclick="pvGalleryNav(-1)">‹</button>
-      <button class="pv-img-arrow next" id="pvGalleryNext" onclick="pvGalleryNav(1)">›</button>
-      <!-- dots indicadores -->
-      <div class="pv-dots" id="pvDots"></div>
-    </div>
-    <div class="pv-info">
-      <div class="pv-badge" id="pvBadge"></div>
-      <div class="pv-name" id="pvName"></div>
-      <div class="pv-cod"  id="pvCod"></div>
-      <div class="pv-sep"></div>
-      <div id="pvColorsSection"></div>
-      <div class="pv-specs-label">Especificações</div>
-      <ul class="pv-specs" id="pvSpecs"></ul>
-      <div class="pv-nav">
-        <button class="pv-nav-btn" id="pvPrev" onclick="pvNav(-1)">← Anterior</button>
-        <span class="pv-counter" id="pvCounter"></span>
-        <button class="pv-nav-btn" id="pvNext" onclick="pvNav(1)">Próximo →</button>
-      </div>
-    </div>
-  </div>
-</div>
-<!-- IMAGE LIGHTBOX -->
-<div class="img-lightbox" id="imgLightbox" onclick="pvZoomClose()">
-  <div class="img-lightbox-bg" id="imgLightboxBg"></div>
-  <div class="img-lightbox-glow"></div>
-  <button class="img-lightbox-close" onclick="event.stopPropagation();pvZoomClose()">✕</button>
-  <img id="imgLightboxImg" src="" alt="" onclick="event.stopPropagation()">
-  <div class="img-lightbox-hint">Clique em qualquer lugar para fechar · ESC</div>
-</div>
-<!-- ── MODAL DE IMPORTAÇÃO SELETIVA ── -->
-<div class="simp-overlay" id="simpOverlay" onclick="simpCloseOutside(event)">
-  <div class="simp-modal">
-    <div class="simp-header">
-      <div class="simp-header-icon">📥</div>
-      <div class="simp-header-text">
-        <h2>Importação Seletiva de Backup</h2>
-        <p id="simpHeaderDesc">Escolha exatamente o que deseja restaurar deste backup</p>
-      </div>
-      <div class="simp-meta">
-        <div class="simp-meta-val" id="simpTotalProds">0</div>
-        <div class="simp-meta-label">produtos no backup</div>
-      </div>
-    </div>
-
-    <div class="simp-body">
-
-      <!-- SEÇÃO 1: Produtos -->
-      <div class="simp-section active-section" id="simpSecProd">
-        <div class="simp-section-head" onclick="simpToggleSection('prod')">
-          <div class="simp-toggle"><span class="simp-toggle-check">✓</span></div>
-          <span class="simp-section-icon">📦</span>
-          <div class="simp-section-info">
-            <div class="simp-section-title">Produtos</div>
-            <div class="simp-section-desc">Selecione quais produtos deseja importar com filtros avançados</div>
+      <!-- ══ PANEL: PRODUTOS ══ -->
+      <div id="panelProdutos">
+        <div class="topbar">
+          <div class="topbar-title">Gerenciar <em>Produtos</em></div>
+          <span id="saveIndicator"
+            style="font-size:.72rem;color:var(--verde);opacity:0;transition:opacity .4s;margin-left:4px;font-weight:500;">✓
+            Salvo</span>
+          <div class="topbar-actions">
+            <button class="btn-sm btn-primary" onclick="openAddModal()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                stroke-linejoin="round">
+                <line x1="12" y1="5" x2="12" y2="19" />
+                <line x1="5" y1="12" x2="19" y2="12" />
+              </svg>
+              Novo Produto
+            </button>
           </div>
-          <span class="simp-section-badge" id="simpProdBadge">0 selecionados</span>
         </div>
-
-        <div class="simp-prod-filters">
-          <!-- Filtro por categoria -->
-          <div class="simp-filter-row">
-            <label>Categoria</label>
-            <div class="simp-filter-chips" id="simpCatChips">
-              <span class="simp-chip chip-all active" data-cat="all" onclick="simpCatChip(this)">Todas</span>
+        <div class="panel product-stage">
+          <div class="product-toolbar">
+            <div class="search-box">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8" />
+                <path d="m21 21-4.35-4.35" />
+              </svg>
+              <input type="text" id="prodSearch" placeholder="Buscar produto..." oninput="filterProducts()">
             </div>
-          </div>
-          <!-- Filtro por texto -->
-          <div class="simp-filter-row">
-            <label>Buscar</label>
-            <input class="simp-filter-input" type="text" id="simpSearch" placeholder="Filtrar por nome ou código..." oninput="simpUpdateProdList()">
-          </div>
-          <!-- Filtro por imagem -->
-          <div class="simp-filter-row">
-            <label>Imagem</label>
-            <select class="simp-filter-select" id="simpImgFilter" onchange="simpUpdateProdList()">
-              <option value="">Todos</option>
+            <select class="filter-select" id="catFilter" onchange="filterProducts()">
+              <option value="">Todas as categorias</option>
+              <option>Brinquedos</option>
+              <option>Passeio (Guias e Peitorais)</option>
+              <option>Alimentação e Hidratação</option>
+              <option>Higiene e Estética</option>
+              <option>Outros</option>
+              <option>Utilidades e Acessórios</option>
+            </select>
+            <select class="filter-select" id="imgFilter" onchange="filterProducts()">
+              <option value="">Todas as imagens</option>
               <option value="has">Com imagem</option>
               <option value="no">Sem imagem</option>
             </select>
+            <select class="filter-select" id="statusFilter" onchange="filterProducts()">
+              <option value="">Todos os status</option>
+              <option value="active">Ativos</option>
+              <option value="inactive">Desativados</option>
+            </select>
           </div>
+          <div class="product-grid" id="productGrid"></div>
+        </div>
+      </div>
 
-          <!-- Modo de mesclagem -->
-          <div class="simp-filter-row" style="margin-top:4px;">
-            <label>Modo</label>
-            <div class="simp-merge-row" style="flex:1;margin-top:0;">
-              <label class="simp-merge-opt active" id="simpMergeOpt1">
-                <input type="radio" name="simpMerge" value="replace" checked onchange="simpUpdateMergeUI()">
-                <div>
-                  <div class="simp-merge-label">🔄 Substituir tudo</div>
-                  <div class="simp-merge-desc">Remove produtos atuais e insere os selecionados</div>
-                </div>
-              </label>
-              <label class="simp-merge-opt" id="simpMergeOpt2">
-                <input type="radio" name="simpMerge" value="merge" onchange="simpUpdateMergeUI()">
-                <div>
-                  <div class="simp-merge-label">➕ Mesclar (acrescentar)</div>
-                  <div class="simp-merge-desc">Adiciona ao catálogo atual sem remover nada</div>
-                </div>
-              </label>
-              <label class="simp-merge-opt" id="simpMergeOpt3">
-                <input type="radio" name="simpMerge" value="fields" onchange="simpUpdateMergeUI()">
-                <div>
-                  <div class="simp-merge-label">🧩 Mesclar por campos</div>
-                  <div class="simp-merge-desc">Atualiza apenas campos específicos nos produtos existentes</div>
-                </div>
-              </label>
-            </div>
+      <!-- ══ PANEL: SETTINGS ══ -->
+      <div id="panelSettings" style="display:none">
+        <div class="topbar">
+          <div class="topbar-title">Identidade <em>Visual</em></div>
+          <div class="topbar-actions">
+            <button class="btn-sm btn-primary" onclick="saveSettings()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                stroke-linejoin="round">
+                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+                <polyline points="17 21 17 13 7 13 7 21" />
+                <polyline points="7 3 7 8 15 8" />
+              </svg>
+              Salvar Configurações
+            </button>
           </div>
+        </div>
+        <div class="panel">
+          <div class="settings-grid">
 
-          <!-- Seleção de campos (visível só no modo "fields") -->
-          <div class="simp-fields-panel" id="simpFieldsPanel" style="display:none;">
-            <div class="simp-fields-label">Selecione quais campos importar do backup:</div>
-            <div class="simp-fields-grid">
-              <label class="simp-field-opt active" id="sfNome">
-                <input type="checkbox" name="simpField" value="nome" checked onchange="simpFieldChange(this)">
-                <span class="sfo-icon">🔤</span>
-                <span class="sfo-label">Título / Nome</span>
-                <span class="sfo-desc">Nome do produto</span>
-              </label>
-              <label class="simp-field-opt active" id="sfCodigo">
-                <input type="checkbox" name="simpField" value="codigo" checked onchange="simpFieldChange(this)">
-                <span class="sfo-icon">🔢</span>
-                <span class="sfo-label">Código</span>
-                <span class="sfo-desc">Código de referência</span>
-              </label>
-              <label class="simp-field-opt active" id="sfCategoria">
-                <input type="checkbox" name="simpField" value="categoria" checked onchange="simpFieldChange(this)">
-                <span class="sfo-icon">🏷️</span>
-                <span class="sfo-label">Categoria</span>
-                <span class="sfo-desc">Categoria do produto</span>
-              </label>
-              <label class="simp-field-opt active" id="sfDetalhes">
-                <input type="checkbox" name="simpField" value="detalhes" checked onchange="simpFieldChange(this)">
-                <span class="sfo-icon">📋</span>
-                <span class="sfo-label">Informações</span>
-                <span class="sfo-desc">Especificações e detalhes</span>
-              </label>
-              <label class="simp-field-opt active" id="sfColors">
-                <input type="checkbox" name="simpField" value="colors" checked onchange="simpFieldChange(this)">
-                <span class="sfo-icon">🎨</span>
-                <span class="sfo-label">Cores</span>
-                <span class="sfo-desc">Paleta de cores do produto</span>
-              </label>
-              <label class="simp-field-opt active" id="sfImg">
-                <input type="checkbox" name="simpField" value="img" checked onchange="simpFieldChange(this)">
-                <span class="sfo-icon">🖼️</span>
-                <span class="sfo-label">Imagem principal</span>
-                <span class="sfo-desc">Foto capa do produto</span>
-              </label>
-              <label class="simp-field-opt active" id="sfGallery">
-                <input type="checkbox" name="simpField" value="gallery" checked onchange="simpFieldChange(this)">
-                <span class="sfo-icon">📸</span>
-                <span class="sfo-label">Galeria</span>
-                <span class="sfo-desc">Todas as fotos adicionais</span>
-              </label>
-            </div>
-            <div class="simp-fields-presets">
-              <span class="simp-preset-label">Atalhos:</span>
-              <button class="simp-preset-btn" onclick="simpPreset('only-titles')">Só títulos</button>
-              <button class="simp-preset-btn" onclick="simpPreset('only-colors')">Só cores</button>
-              <button class="simp-preset-btn" onclick="simpPreset('only-info')">Só informações</button>
-              <button class="simp-preset-btn" onclick="simpPreset('only-images')">Só imagens</button>
-              <button class="simp-preset-btn" onclick="simpPreset('no-images')">Tudo exceto imagens</button>
-              <button class="simp-preset-btn" onclick="simpPreset('all')">Tudo</button>
-            </div>
-            <div class="simp-fields-match">
-              <div class="simp-fields-label" style="margin-bottom:6px;">Identificar produto existente por:</div>
-              <div style="display:flex;gap:8px;flex-wrap:wrap;">
-                <label class="simp-match-opt active" id="simpMatchOpt1">
-                  <input type="radio" name="simpMatch" value="nome" checked onchange="simpMatchChange()">
-                  <span>🔤 Nome</span>
-                </label>
-                <label class="simp-match-opt" id="simpMatchOpt2">
-                  <input type="radio" name="simpMatch" value="codigo" onchange="simpMatchChange()">
-                  <span>🔢 Código</span>
-                </label>
-                <label class="simp-match-opt" id="simpMatchOpt3">
-                  <input type="radio" name="simpMatch" value="nome+cat" onchange="simpMatchChange()">
-                  <span>🏷️ Nome + Categoria</span>
-                </label>
+            <!-- Logo & Nome -->
+            <div class="settings-card">
+              <h3>Logo & Nome da Marca</h3>
+              <p class="hint">Aparece no topo do catálogo e no rodapé</p>
+              <div class="field">
+                <label>Nome da Marca</label>
+                <input type="text" id="siteName" value="DeliVet" oninput="updatePreview()">
               </div>
-              <div id="simpMatchHint" style="font-size:.68rem;color:var(--muted);margin-top:6px;">
-                Produtos sem correspondência no catálogo atual serão <strong>ignorados</strong>.
+              <div class="field">
+                <label>Slogan / Tagline</label>
+                <input type="text" id="siteTagline" value="Distribuidora Pet Shop" oninput="updatePreview()">
+              </div>
+              <div class="field">
+                <label>Logo (imagem)</label>
+                <div class="upload-area" id="logoUploadArea">
+                  <input type="file" accept="image/*" onchange="handleLogoUpload(event)">
+                  <img class="logo-preview" id="logoPreview" src="" alt="Logo">
+                  <div class="upload-icon">🖼️</div>
+                  <p>Arraste ou <strong>clique para enviar</strong></p>
+                  <p style="font-size:.65rem;margin-top:4px">PNG, SVG ou JPG recomendado</p>
+                </div>
               </div>
             </div>
-          </div>
 
-          <!-- Preview lista -->
-          <div class="simp-prod-preview">
-            <div class="simp-prod-preview-head">
-              <span>Produtos filtrados</span>
-              <span><span class="simp-prod-count" id="simpVisibleCount">0</span> visíveis · <span class="simp-prod-count" id="simpCheckedCount">0</span> selecionados</span>
+            <!-- Cores -->
+            <div class="settings-card">
+              <h3>Paleta de Cores</h3>
+              <p class="hint">Cores principais do catálogo</p>
+              <div class="field">
+                <label>Cor Principal (Verde)</label>
+                <div class="color-row">
+                  <input type="color" id="colorVerde" value="#3A8F62" oninput="updateColorPreview()">
+                  <input type="text" id="colorVerdeHex" value="#3A8F62"
+                    oninput="syncColorFromText('colorVerde','colorVerdeHex')">
+                </div>
+              </div>
+              <div class="field">
+                <label>Cor de Destaque (Laranja)</label>
+                <div class="color-row">
+                  <input type="color" id="colorLaranja" value="#E8602A" oninput="updateColorPreview()">
+                  <input type="text" id="colorLaranjaHex" value="#E8602A"
+                    oninput="syncColorFromText('colorLaranja','colorLaranjaHex')">
+                </div>
+              </div>
+              <div class="field">
+                <label>Cor de Fundo</label>
+                <div class="color-row">
+                  <input type="color" id="colorBg" value="#F7F3EE" oninput="updateColorPreview()">
+                  <input type="text" id="colorBgHex" value="#F7F3EE"
+                    oninput="syncColorFromText('colorBg','colorBgHex')">
+                </div>
+              </div>
+              <div class="field">
+                <label>Opacidade da Marca d'Agua</label>
+                <div class="watermark-row">
+                  <input type="range" id="watermarkOpacity" min="0" max="40" step="1" value="18" oninput="updateWatermarkPreview()">
+                  <span id="watermarkOpacityValue">18%</span>
+                </div>
+              </div>
+              <!-- Live preview swatch -->
+              <div style="margin-top:16px;">
+                <div class="field"><label>Pré-visualização</label></div>
+                <div id="colorSwatch" style="display:flex;gap:8px;align-items:center;">
+                  <div id="sw1" style="width:36px;height:36px;border-radius:8px;background:#3A8F62;"></div>
+                  <div id="sw2" style="width:36px;height:36px;border-radius:8px;background:#E8602A;"></div>
+                  <div id="sw3"
+                    style="width:36px;height:36px;border-radius:8px;background:#F7F3EE;border:1px solid #ccc;"></div>
+                  <span style="font-size:.72rem;color:var(--muted);margin-left:4px;">Principal · Destaque · Fundo</span>
+                </div>
+              </div>
             </div>
-            <div class="simp-select-all-row">
-              <input type="checkbox" id="simpSelectAll" onchange="simpSelectAllToggle(this.checked)">
-              <label for="simpSelectAll">Selecionar / desselecionar todos os visíveis</label>
+
+            <!-- Hero -->
+            <div class="settings-card">
+              <h3>Banner Hero</h3>
+              <p class="hint">Seção de destaque no topo do catálogo</p>
+              <div class="field">
+                <label>Título (linha 1)</label>
+                <input type="text" id="heroLine1" value="Produtos para">
+              </div>
+              <div class="field">
+                <label>Título (linha 2)</label>
+                <input type="text" id="heroLine2" value="quem ama de">
+              </div>
+              <div class="field">
+                <label>Título (destaque itálico)</label>
+                <input type="text" id="heroLine3" value="verdade">
+              </div>
+              <div class="field">
+                <label>Descrição</label>
+                <textarea
+                  id="heroDesc">Brinquedos, acessórios de passeio, higiene e muito mais — tudo pensado para o bem-estar e felicidade do seu pet.</textarea>
+              </div>
             </div>
-            <div class="simp-prod-list" id="simpProdList"></div>
+
+            <!-- Contato -->
+            <div class="settings-card">
+              <h3>Informações de Contato</h3>
+              <p class="hint">Exibidas no rodapé do catálogo</p>
+              <div class="field">
+                <label>WhatsApp</label>
+                <input type="text" id="contWhatsapp" value="(11) 99999-0000">
+              </div>
+              <div class="field">
+                <label>E-mail</label>
+                <input type="text" id="contEmail" value="vendas@delivet.com.br">
+              </div>
+              <div class="field">
+                <label>Instagram</label>
+                <input type="text" id="contInsta" value="@delivet.petshop">
+              </div>
+              <div class="field">
+                <label>Rodapé (texto copyright)</label>
+                <input type="text" id="contCopy" value="© 2025 DeliVet · Todos os direitos reservados">
+              </div>
+            </div>
+
           </div>
         </div>
       </div>
 
-      <!-- SEÇÃO 2: Configurações visuais -->
-      <div class="simp-section active-section" id="simpSecCfg">
-        <div class="simp-section-head" onclick="simpToggleSection('cfg')">
-          <div class="simp-toggle"><span class="simp-toggle-check">✓</span></div>
-          <span class="simp-section-icon">🎨</span>
-          <div class="simp-section-info">
-            <div class="simp-section-title">Identidade Visual & Configurações</div>
-            <div class="simp-section-desc">Nome da marca, cores, hero, contato</div>
+      <!-- ══ PANEL: CATEGORIAS ══ -->
+      <div id="panelCategorias" style="display:none">
+        <div class="topbar">
+          <div class="topbar-title">Gerenciar <em>Categorias</em></div>
+        </div>
+        <div class="panel">
+          <div id="catEditorList"></div>
+        </div>
+      </div>
+
+    </div><!-- /main -->
+  </div><!-- /app -->
+
+  <!-- ── MODAL EDITAR/ADICIONAR PRODUTO ── -->
+  <div class="modal-overlay" id="modalOverlay" onclick="closeModalOutside(event)">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="modalTitle">Editar Produto</h2>
+        <button class="btn-close" onclick="closeModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <!-- ── GALERIA DE FOTOS ── -->
+        <div class="gallery-section">
+          <div class="gallery-section-label">
+            Fotos do Produto
+            <span id="galleryCount">0 mídia(s)</span>
           </div>
-          <span class="simp-section-badge" id="simpCfgBadge">Incluído</span>
-        </div>
-      </div>
-
-      <!-- SEÇÃO 3: Categorias -->
-      <div class="simp-section active-section" id="simpSecCat">
-        <div class="simp-section-head" onclick="simpToggleSection('cat')">
-          <div class="simp-toggle"><span class="simp-toggle-check">✓</span></div>
-          <span class="simp-section-icon">🏷️</span>
-          <div class="simp-section-info">
-            <div class="simp-section-title">Configuração de Categorias</div>
-            <div class="simp-section-desc">Emojis, cores e ordenação das categorias</div>
+          <div class="gallery-grid" id="galleryGrid">
+            <!-- thumbs gerados por JS -->
+            <label class="gallery-add-btn" id="galleryAddBtn" title="Adicionar foto">
+              <input type="file" accept="image/*,video/webm" multiple onchange="handleGalleryAdd(event)">
+              <div class="add-icon">＋</div>
+              <span>Adicionar foto</span>
+            </label>
           </div>
-          <span class="simp-section-badge" id="simpCatBadge">Incluído</span>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+          <div class="field">
+            <label>Nome do Produto</label>
+            <input type="text" id="prodNome" placeholder="Ex: Bola Lisa 55 mm">
+          </div>
+          <div class="field">
+            <label>Código</label>
+            <input type="text" id="prodCodigo" placeholder="Ex: 4003">
+          </div>
+        </div>
+        <div class="field" style="margin-top:2px;">
+          <label>Código Externo (GTIN/EAN)</label>
+          <input type="text" id="prodGtin" placeholder="Ex: 7891234567890"
+            style="font-family:'DM Sans',monospace;letter-spacing:.06em;">
+        </div>
+        <div class="field">
+          <label>Categoria</label>
+          <select id="prodCategoria">
+            <option>Brinquedos</option>
+            <option>Passeio (Guias e Peitorais)</option>
+            <option>Alimentação e Hidratação</option>
+            <option>Higiene e Estética</option>
+            <option>Outros</option>
+            <option>Utilidades e Acessórios</option>
+          </select>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- ── CORES DISPONÍVEIS ── -->
+        <div class="prod-colors-section">
+          <div class="field">
+            <label>Cores Disponíveis</label>
+          </div>
+          <div class="prod-colors-row" id="prodColorsRow"></div>
+          <div class="color-add-row">
+            <input type="color" id="newColorPicker" value="#3A8F62" title="Escolher cor">
+            <input type="text" id="newColorHex" placeholder="#3A8F62" maxlength="7">
+            <button class="btn-add-color" onclick="addProdColor()">+ Adicionar cor</button>
+          </div>
+          <div class="color-presets" id="colorPresets"></div>
+        </div>
+
+        <div class="divider"></div>
+        <div class="field">
+          <label>Tags do Produto</label>
+          <div class="prod-tags-help">Use tags como Novo, Mais pedido, Exclusivo e ative ou desative cada uma.</div>
+          <div class="tag-presets" id="tagPresets"></div>
+          <div class="tag-add-row">
+            <input type="text" id="newTagInput" placeholder="Ex: Novo">
+            <button class="btn-add-detail" type="button" onclick="addProductTag()">+ Adicionar tag</button>
+          </div>
+          <div class="prod-tags-list" id="prodTagsList"></div>
+        </div>
+
+        <div class="divider"></div>
+        <div class="field">
+          <label>Detalhes / Especificações</label>
+          <div class="details-list" id="detailsList"></div>
+          <button class="btn-add-detail" onclick="addDetail()">
+            + Adicionar especificação
+          </button>
         </div>
       </div>
-
-      <!-- Resumo dinâmico -->
-      <div class="simp-summary" id="simpSummary">
-        <div class="simp-summary-icon">📋</div>
-        <div class="simp-summary-text">
-          <strong id="simpSummaryTitle">Nada selecionado</strong>
-          <span id="simpSummaryDesc">Ative pelo menos uma seção para importar</span>
-          <div class="simp-summary-chips" id="simpSummaryChips"></div>
-        </div>
+      <div class="modal-footer">
+        <button class="btn-sm btn-danger" id="btnDelete" onclick="deleteProduct()" style="margin-right:5px;">
+          🗑 Excluir
+        </button>
+        <button class="btn-sm" id="btnDuplicate" onclick="duplicateProduct()"
+          style="margin-right:5px; background-color:#718096; color:white; border:none;">
+          📋 Duplicar
+        </button>
+        <button class="btn-sm" id="btnToggleActive" onclick="toggleProductActive()"
+          style="margin-right:auto; background-color:#D69E2E; color:white; border:none;">
+          ⏸ Desativar
+        </button>
+        <button class="btn-sm btn-outline" onclick="closeModal()">Cancelar</button>
+        <button class="btn-sm btn-primary" onclick="saveProduct()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+            stroke-linejoin="round" width="13" height="13">
+            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 0-2 2z" />
+            <polyline points="17 21 17 13 7 13 7 21" />
+            <polyline points="7 3 7 8 15 8" />
+          </svg>
+          Salvar Produto
+        </button>
       </div>
-
-    </div><!-- /simp-body -->
-
-    <div class="simp-footer">
-      <div class="simp-warn" id="simpWarn" style="display:none">⚠️ Esta ação não pode ser desfeita</div>
-      <button class="simp-btn-cancel" onclick="simpClose()">Cancelar</button>
-      <button class="simp-btn-apply" id="simpApplyBtn" onclick="simpApply()">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-        Aplicar Importação
-      </button>
     </div>
   </div>
-</div>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast"></div>
+
+
+  <!-- PRODUCT VIEWER MODAL -->
+  <div class="pv-overlay" id="pvOverlay" onclick="pvCloseOutside(event)">
+    <div class="pv-modal" id="pvModal">
+      <button class="pv-close" onclick="pvClose()">✕</button>
+      <div class="pv-img-side" id="pvImgSide">
+        <div class="pv-glow"></div>
+        <div class="pv-img-badge" id="pvImgBadge" style="display:none"></div>
+        <img id="pvImg" src="" alt="" style="display:none">
+        <div class="pv-ph" id="pvPh"></div>
+        <!-- setas de galeria -->
+        <button class="pv-img-arrow prev" id="pvGalleryPrev" onclick="pvGalleryNav(-1)">‹</button>
+        <button class="pv-img-arrow next" id="pvGalleryNext" onclick="pvGalleryNav(1)">›</button>
+        <!-- dots indicadores -->
+        <div class="pv-dots" id="pvDots"></div>
+      </div>
+      <div class="pv-info">
+        <div class="pv-badge" id="pvBadge"></div>
+        <div class="pv-name" id="pvName"></div>
+        <div class="pv-cod" id="pvCod"></div>
+        <div class="pv-sep"></div>
+        <div id="pvColorsSection"></div>
+        <div class="pv-specs-label">Especificações</div>
+        <ul class="pv-specs" id="pvSpecs"></ul>
+        <div class="pv-nav">
+          <button class="pv-nav-btn" id="pvPrev" onclick="pvNav(-1)">← Anterior</button>
+          <span class="pv-counter" id="pvCounter"></span>
+          <button class="pv-nav-btn" id="pvNext" onclick="pvNav(1)">Próximo →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- IMAGE LIGHTBOX -->
+  <div class="img-lightbox" id="imgLightbox" onclick="pvZoomClose()">
+    <div class="img-lightbox-bg" id="imgLightboxBg"></div>
+    <div class="img-lightbox-glow"></div>
+    <button class="img-lightbox-close" onclick="event.stopPropagation();pvZoomClose()">✕</button>
+    <img id="imgLightboxImg" src="" alt="" onclick="event.stopPropagation()">
+    <div class="img-lightbox-hint">Clique em qualquer lugar para fechar · ESC</div>
+  </div>
+  <!-- ── MODAL DE IMPORTAÇÃO SELETIVA ── -->
+  <div class="simp-overlay" id="simpOverlay" onclick="simpCloseOutside(event)">
+    <div class="simp-modal">
+      <div class="simp-header">
+        <div class="simp-header-icon">📥</div>
+        <div class="simp-header-text">
+          <h2>Importação Seletiva de Backup</h2>
+          <p id="simpHeaderDesc">Escolha exatamente o que deseja restaurar deste backup</p>
+        </div>
+        <div class="simp-meta">
+          <div class="simp-meta-val" id="simpTotalProds">0</div>
+          <div class="simp-meta-label">produtos no backup</div>
+        </div>
+      </div>
+
+      <div class="simp-body">
+
+        <!-- SEÇÃO 1: Produtos -->
+        <div class="simp-section active-section" id="simpSecProd">
+          <div class="simp-section-head" onclick="simpToggleSection('prod')">
+            <div class="simp-toggle"><span class="simp-toggle-check">✓</span></div>
+            <span class="simp-section-icon">📦</span>
+            <div class="simp-section-info">
+              <div class="simp-section-title">Produtos</div>
+              <div class="simp-section-desc">Selecione quais produtos deseja importar com filtros avançados</div>
+            </div>
+            <span class="simp-section-badge" id="simpProdBadge">0 selecionados</span>
+          </div>
+
+          <div class="simp-prod-filters">
+            <!-- Filtro por categoria -->
+            <div class="simp-filter-row">
+              <label>Categoria</label>
+              <div class="simp-filter-chips" id="simpCatChips">
+                <span class="simp-chip chip-all active" data-cat="all" onclick="simpCatChip(this)">Todas</span>
+              </div>
+            </div>
+            <!-- Filtro por texto -->
+            <div class="simp-filter-row">
+              <label>Buscar</label>
+              <input class="simp-filter-input" type="text" id="simpSearch" placeholder="Filtrar por nome ou código..."
+                oninput="simpUpdateProdList()">
+            </div>
+            <!-- Filtro por imagem -->
+            <div class="simp-filter-row">
+              <label>Imagem</label>
+              <select class="simp-filter-select" id="simpImgFilter" onchange="simpUpdateProdList()">
+                <option value="">Todos</option>
+                <option value="has">Com imagem</option>
+                <option value="no">Sem imagem</option>
+              </select>
+            </div>
+
+            <!-- Modo de mesclagem -->
+            <div class="simp-filter-row" style="margin-top:4px;">
+              <label>Modo</label>
+              <div class="simp-merge-row" style="flex:1;margin-top:0;">
+                <label class="simp-merge-opt active" id="simpMergeOpt1">
+                  <input type="radio" name="simpMerge" value="replace" checked onchange="simpUpdateMergeUI()">
+                  <div>
+                    <div class="simp-merge-label">🔄 Substituir tudo</div>
+                    <div class="simp-merge-desc">Remove produtos atuais e insere os selecionados</div>
+                  </div>
+                </label>
+                <label class="simp-merge-opt" id="simpMergeOpt2">
+                  <input type="radio" name="simpMerge" value="merge" onchange="simpUpdateMergeUI()">
+                  <div>
+                    <div class="simp-merge-label">➕ Mesclar (acrescentar)</div>
+                    <div class="simp-merge-desc">Adiciona ao catálogo atual sem remover nada</div>
+                  </div>
+                </label>
+                <label class="simp-merge-opt" id="simpMergeOpt3">
+                  <input type="radio" name="simpMerge" value="fields" onchange="simpUpdateMergeUI()">
+                  <div>
+                    <div class="simp-merge-label">🧩 Mesclar por campos</div>
+                    <div class="simp-merge-desc">Atualiza apenas campos específicos nos produtos existentes</div>
+                  </div>
+                </label>
+              </div>
+            </div>
+
+            <!-- Seleção de campos (visível só no modo "fields") -->
+            <div class="simp-fields-panel" id="simpFieldsPanel" style="display:none;">
+              <div class="simp-fields-label">Selecione quais campos importar do backup:</div>
+              <div class="simp-fields-grid">
+                <label class="simp-field-opt active" id="sfNome">
+                  <input type="checkbox" name="simpField" value="nome" checked onchange="simpFieldChange(this)">
+                  <span class="sfo-icon">🔤</span>
+                  <span class="sfo-label">Título / Nome</span>
+                  <span class="sfo-desc">Nome do produto</span>
+                </label>
+                <label class="simp-field-opt active" id="sfCodigo">
+                  <input type="checkbox" name="simpField" value="codigo" checked onchange="simpFieldChange(this)">
+                  <span class="sfo-icon">🔢</span>
+                  <span class="sfo-label">Código</span>
+                  <span class="sfo-desc">Código de referência</span>
+                </label>
+                <label class="simp-field-opt active" id="sfCategoria">
+                  <input type="checkbox" name="simpField" value="categoria" checked onchange="simpFieldChange(this)">
+                  <span class="sfo-icon">🏷️</span>
+                  <span class="sfo-label">Categoria</span>
+                  <span class="sfo-desc">Categoria do produto</span>
+                </label>
+                <label class="simp-field-opt active" id="sfTags">
+                  <input type="checkbox" name="simpField" value="tags" checked onchange="simpFieldChange(this)">
+                  <span class="sfo-icon">âœ¨</span>
+                  <span class="sfo-label">Tags</span>
+                  <span class="sfo-desc">Selos como Novo e Exclusivo</span>
+                </label>
+                <label class="simp-field-opt active" id="sfDetalhes">
+                  <input type="checkbox" name="simpField" value="detalhes" checked onchange="simpFieldChange(this)">
+                  <span class="sfo-icon">📋</span>
+                  <span class="sfo-label">Informações</span>
+                  <span class="sfo-desc">Especificações e detalhes</span>
+                </label>
+                <label class="simp-field-opt active" id="sfColors">
+                  <input type="checkbox" name="simpField" value="colors" checked onchange="simpFieldChange(this)">
+                  <span class="sfo-icon">🎨</span>
+                  <span class="sfo-label">Cores</span>
+                  <span class="sfo-desc">Paleta de cores do produto</span>
+                </label>
+                <label class="simp-field-opt active" id="sfImg">
+                  <input type="checkbox" name="simpField" value="img" checked onchange="simpFieldChange(this)">
+                  <span class="sfo-icon">🖼️</span>
+                  <span class="sfo-label">Imagem principal</span>
+                  <span class="sfo-desc">Foto capa do produto</span>
+                </label>
+                <label class="simp-field-opt active" id="sfGallery">
+                  <input type="checkbox" name="simpField" value="gallery" checked onchange="simpFieldChange(this)">
+                  <span class="sfo-icon">📸</span>
+                  <span class="sfo-label">Galeria</span>
+                  <span class="sfo-desc">Todas as fotos adicionais</span>
+                </label>
+              </div>
+              <div class="simp-fields-presets">
+                <span class="simp-preset-label">Atalhos:</span>
+                <button class="simp-preset-btn" onclick="simpPreset('only-titles')">Só títulos</button>
+                <button class="simp-preset-btn" onclick="simpPreset('only-colors')">Só cores</button>
+                <button class="simp-preset-btn" onclick="simpPreset('only-info')">Só informações</button>
+                <button class="simp-preset-btn" onclick="simpPreset('only-images')">Só imagens</button>
+                <button class="simp-preset-btn" onclick="simpPreset('no-images')">Tudo exceto imagens</button>
+                <button class="simp-preset-btn" onclick="simpPreset('all')">Tudo</button>
+              </div>
+              <div class="simp-fields-match">
+                <div class="simp-fields-label" style="margin-bottom:6px;">Identificar produto existente por:</div>
+                <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                  <label class="simp-match-opt active" id="simpMatchOpt1">
+                    <input type="radio" name="simpMatch" value="nome" checked onchange="simpMatchChange()">
+                    <span>🔤 Nome</span>
+                  </label>
+                  <label class="simp-match-opt" id="simpMatchOpt2">
+                    <input type="radio" name="simpMatch" value="codigo" onchange="simpMatchChange()">
+                    <span>🔢 Código</span>
+                  </label>
+                  <label class="simp-match-opt" id="simpMatchOpt3">
+                    <input type="radio" name="simpMatch" value="nome+cat" onchange="simpMatchChange()">
+                    <span>🏷️ Nome + Categoria</span>
+                  </label>
+                </div>
+                <div id="simpMatchHint" style="font-size:.68rem;color:var(--muted);margin-top:6px;">
+                  Produtos sem correspondência no catálogo atual serão <strong>ignorados</strong>.
+                </div>
+              </div>
+            </div>
+
+            <!-- Preview lista -->
+            <div class="simp-prod-preview">
+              <div class="simp-prod-preview-head">
+                <span>Produtos filtrados</span>
+                <span><span class="simp-prod-count" id="simpVisibleCount">0</span> visíveis · <span
+                    class="simp-prod-count" id="simpCheckedCount">0</span> selecionados</span>
+              </div>
+              <div class="simp-select-all-row">
+                <input type="checkbox" id="simpSelectAll" onchange="simpSelectAllToggle(this.checked)">
+                <label for="simpSelectAll">Selecionar / desselecionar todos os visíveis</label>
+              </div>
+              <div class="simp-prod-list" id="simpProdList"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SEÇÃO 2: Configurações visuais -->
+        <div class="simp-section active-section" id="simpSecCfg">
+          <div class="simp-section-head" onclick="simpToggleSection('cfg')">
+            <div class="simp-toggle"><span class="simp-toggle-check">✓</span></div>
+            <span class="simp-section-icon">🎨</span>
+            <div class="simp-section-info">
+              <div class="simp-section-title">Identidade Visual & Configurações</div>
+              <div class="simp-section-desc">Nome da marca, cores, hero, contato</div>
+            </div>
+            <span class="simp-section-badge" id="simpCfgBadge">Incluído</span>
+          </div>
+        </div>
+
+        <!-- SEÇÃO 3: Categorias -->
+        <div class="simp-section active-section" id="simpSecCat">
+          <div class="simp-section-head" onclick="simpToggleSection('cat')">
+            <div class="simp-toggle"><span class="simp-toggle-check">✓</span></div>
+            <span class="simp-section-icon">🏷️</span>
+            <div class="simp-section-info">
+              <div class="simp-section-title">Configuração de Categorias</div>
+              <div class="simp-section-desc">Emojis, cores e ordenação das categorias</div>
+            </div>
+            <span class="simp-section-badge" id="simpCatBadge">Incluído</span>
+          </div>
+        </div>
+
+        <!-- Resumo dinâmico -->
+        <div class="simp-summary" id="simpSummary">
+          <div class="simp-summary-icon">📋</div>
+          <div class="simp-summary-text">
+            <strong id="simpSummaryTitle">Nada selecionado</strong>
+            <span id="simpSummaryDesc">Ative pelo menos uma seção para importar</span>
+            <div class="simp-summary-chips" id="simpSummaryChips"></div>
+          </div>
+        </div>
+
+      </div><!-- /simp-body -->
+
+      <div class="simp-footer">
+        <div class="simp-warn" id="simpWarn" style="display:none">⚠️ Esta ação não pode ser desfeita</div>
+        <button class="simp-btn-cancel" onclick="simpClose()">Cancelar</button>
+        <button class="simp-btn-apply" id="simpApplyBtn" onclick="simpApply()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+            stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12" />
+          </svg>
+          Aplicar Importação
+        </button>
+      </div>
+    </div>
+  </div>
 
 </body>
+
 </html>

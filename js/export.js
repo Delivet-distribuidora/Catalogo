@@ -90,6 +90,38 @@ async function compressAllProducts(maxPx, onProgress) {
   return result;
 }
 
+function assetToDataUrl(path) {
+  return fetch(path)
+    .then(resp => {
+      if (!resp.ok) throw new Error(`Falha ao carregar ${path}`);
+      return resp.blob();
+    })
+    .then(blob => new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = () => reject(reader.error || new Error(`Falha ao ler ${path}`));
+      reader.readAsDataURL(blob);
+    }));
+}
+
+async function getDefaultBrandAsset() {
+  if (settings.logoImg) return settings.logoImg;
+
+  const sidebarLogo = document.querySelector('#sidebarLogo .sidebar-logo-img');
+  if (sidebarLogo) {
+    const sidebarSrc = sidebarLogo.currentSrc || sidebarLogo.src || '';
+    if (sidebarSrc.startsWith('data:')) return sidebarSrc;
+  }
+
+  try {
+    return await assetToDataUrl('d-dog.png');
+  } catch (e) {
+    console.error('Erro ao carregar ativo padrao da marca', e);
+  }
+
+  return '';
+}
+
 function exportCatalog() {
   // Calcular tamanho estimado — todos os produtos, incluindo desativados
   const totalImgs = products.filter(p => p.img).length;
@@ -178,6 +210,11 @@ function showExportModal(totalImgs, rawKB) {
         style="padding:9px 20px;border-radius:50px;border:1.5px solid #E5DDD4;background:none;font-family:'DM Sans',sans-serif;font-size:.8rem;font-weight:600;color:#6B5F54;cursor:pointer;">
         Cancelar
       </button>
+      <button id="btnPreviewExport" onclick="previewExportCatalog()"
+        style="padding:9px 20px;border-radius:50px;border:1.5px solid #3A8F62;background:#E8F5EE;color:#2E7A52;font-family:'DM Sans',sans-serif;font-size:.8rem;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:7px;transition:background .15s;">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.06 12a10.94 10.94 0 0 1 19.88 0 10.94 10.94 0 0 1-19.88 0"/><circle cx="12" cy="12" r="3"/></svg>
+        Preview
+      </button>
       <button id="btnDoExport" onclick="doExportCatalog()"
         style="padding:9px 22px;border-radius:50px;border:none;background:#3A8F62;color:#fff;font-family:'DM Sans',sans-serif;font-size:.8rem;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:7px;transition:background .15s;">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
@@ -221,38 +258,86 @@ function clearPresetSelection() {
   });
 }
 
-async function doExportCatalog() {
-  const maxPx   = parseInt(document.getElementById('sizeSlider').value) || 800;
-
-  // Show progress bar
+function setExportBusyState(isBusy) {
   const progWrap = document.getElementById('exportProgress');
+  const exportBtn = document.getElementById('btnDoExport');
+  const previewBtn = document.getElementById('btnPreviewExport');
+  if (progWrap) progWrap.style.display = isBusy ? 'block' : 'none';
+  if (exportBtn) {
+    exportBtn.disabled = isBusy;
+    exportBtn.style.opacity = isBusy ? '0.6' : '1';
+  }
+  if (previewBtn) {
+    previewBtn.disabled = isBusy;
+    previewBtn.style.opacity = isBusy ? '0.6' : '1';
+  }
+}
+
+async function buildExportPayload(maxPx, options = {}) {
   const progBar  = document.getElementById('exportProgressBar');
   const progTxt  = document.getElementById('exportProgressTxt');
-  const exportBtn = document.getElementById('btnDoExport');
-  progWrap.style.display = 'block';
-  exportBtn.disabled = true;
-  exportBtn.style.opacity = '0.6';
+  const inlineAssets = options.inlineAssets === true;
 
   // Compress images
   const origProducts = products;
-  let compressed;
-  try {
-    compressed = await compressAllProducts(maxPx, (done, total) => {
-      const pct = total > 0 ? Math.round(done / total * 100) : 100;
-      progBar.style.width = pct + '%';
-      progTxt.textContent = done + ' / ' + total;
-    });
-  } catch (err) {
-    showToast('Erro ao comprimir imagens: ' + err.message, 'error');
-    exportBtn.disabled = false;
-    exportBtn.style.opacity = '1';
-    return;
-  }
+  const compressed = await compressAllProducts(maxPx, (done, total) => {
+    const pct = total > 0 ? Math.round(done / total * 100) : 100;
+    if (progBar) progBar.style.width = pct + '%';
+    if (progTxt) progTxt.textContent = done + ' / ' + total;
+  });
 
   // Build HTML with compressed product data (but buildCard uses relative paths)
   products = compressed;
-  const html = buildCatalogHTML();
-  products = origProducts;
+  try {
+    const brandAsset = await getDefaultBrandAsset();
+    const html = buildCatalogHTML(brandAsset || '', brandAsset || '', { inlineAssets });
+    return { html, compressed, origProducts };
+  } finally {
+    products = origProducts;
+  }
+}
+
+async function previewExportCatalog() {
+  const maxPx = parseInt(document.getElementById('sizeSlider').value) || 800;
+  const previewWin = window.open('', '_blank');
+  if (!previewWin) {
+    showToast('Nao foi possivel abrir a pre-visualizacao. Libere pop-ups do navegador.', 'error');
+    return;
+  }
+
+  previewWin.document.write('<title>Preview do Catalogo</title><body style="font-family:Arial,sans-serif;padding:24px;">Gerando preview...</body>');
+  previewWin.document.close();
+
+  setExportBusyState(true);
+  try {
+    const { html } = await buildExportPayload(maxPx, { inlineAssets: true });
+    previewWin.document.open();
+    previewWin.document.write(html);
+    previewWin.document.close();
+  } catch (err) {
+    console.error(err);
+    previewWin.close();
+    showToast('Erro ao gerar preview: ' + err.message, 'error');
+  } finally {
+    setExportBusyState(false);
+  }
+}
+
+async function doExportCatalog() {
+  const maxPx   = parseInt(document.getElementById('sizeSlider').value) || 800;
+
+  setExportBusyState(true);
+
+  let payload;
+  try {
+    payload = await buildExportPayload(maxPx, { inlineAssets: false });
+  } catch (err) {
+    showToast('Erro ao comprimir imagens: ' + err.message, 'error');
+    setExportBusyState(false);
+    return;
+  }
+
+  const { html, compressed, origProducts } = payload;
 
   // Create ZIP
   const zip = new JSZip();
@@ -329,9 +414,7 @@ async function doExportCatalog() {
     console.error(err);
     showToast('Erro ao gerar arquivo ZIP: ' + err.message, 'error');
   } finally {
-    exportBtn.disabled = false;
-    exportBtn.style.opacity = '1';
-    progWrap.style.display = 'none';
+    setExportBusyState(false);
   }
 }
 
@@ -357,11 +440,16 @@ function showDownloadPanel(html) {
   panel.addEventListener('click', e => { if(e.target === panel) panel.remove(); });
 }
 
-function buildCatalogHTML() {
+function buildCatalogHTML(watermarkAsset = 'img/d-dog.png', defaultLogoAsset = 'img/d-dog.png', options = {}) {
   const s        = settings;
   const verde    = s.colorVerde;
   const laranja  = s.colorLaranja;
   const bg       = s.colorBg;
+  const wmOpacity = Math.max(0, Math.min(0.4, Number(s.watermarkOpacity != null ? s.watermarkOpacity : 0.18)));
+  const safeLogoAsset = defaultLogoAsset || '';
+  const safeWatermarkAsset = watermarkAsset || '';
+  const inlineAssets = options.inlineAssets === true;
+  const exportedLogoAsset = inlineAssets ? (s.logoImg || safeLogoAsset) : 'img/logo.png';
   const catOrder = Object.keys(catConfig).filter(c => catConfig[c].active !== false);
 
   const bycat = {};
@@ -373,15 +461,32 @@ function buildCatalogHTML() {
 
   // Build sections
   const logoHtml = s.logoImg
-    ? `<img src="img/logo.png" alt="${s.siteName}" style="height:40px;object-fit:contain;">`
-    : `<span class="nav-logo" style="color:${verde}">${s.siteName}<span style="color:${laranja}">.</span></span>`;
+    ? `<img src="${exportedLogoAsset}" alt="${s.siteName}" style="height:40px;object-fit:contain;">`
+    : (safeLogoAsset
+      ? `<img src="${safeLogoAsset}" alt="${s.siteName}" style="height:40px;object-fit:contain;">`
+      : `<span class="nav-logo" style="color:${verde}">${s.siteName}<span style="color:${laranja}">.</span></span>`);
 
   const totalProds = products.filter(p => p.ativo !== false).length; // visíveis no catálogo
   const totalCats  = catOrder.filter(c => bycat[c] && bycat[c].length > 0).length;
 
   // ── Card building ──
+  function buildInlineMediaSrc(item, fallbackMime = 'image/png') {
+    if (!item) return '';
+    if (typeof item === 'string') {
+      return item.startsWith('data:') ? item : `data:${fallbackMime};base64,${item}`;
+    }
+    const mime = item.mime || fallbackMime;
+    const raw = item.b64 || '';
+    if (!raw) return '';
+    return raw.startsWith('data:') ? raw : `data:${mime};base64,${raw}`;
+  }
+
   function buildCard(p, cfg, cat) {
     const dets = (p.detalhes || []).map(d => `<li>${d}</li>`).join('');
+    const activeTags = normalizeProductTags(p.tags).filter(tag => tag.active !== false);
+    const tagBadges = activeTags.length
+      ? `<div class="prod-tags">${activeTags.map(tag => `<span class="prod-tag">${escHtml(tag.label)}</span>`).join('')}</div>`
+      : '';
     
     const safeId = String(p.id).replace(/\./g, '_');
 
@@ -390,7 +495,11 @@ function buildCatalogHTML() {
     const mainItem = p.gallery && p.gallery.length ? p.gallery[0] : null;
     const mainMime = (mainItem && typeof mainItem === 'object' && mainItem.mime) || 'image/png';
     const mainExt  = mainMime.split('/')[1] || 'png';
-    const imgPath  = hasImages ? `img/${safeId}_0.${mainExt}` : null;
+    const imgPath  = hasImages
+      ? (inlineAssets
+          ? buildInlineMediaSrc(mainItem || { b64: p.img, mime: mainMime }, mainMime)
+          : `img/${safeId}_0.${mainExt}`)
+      : null;
 
     const imgTag = imgPath
       ? (mainMime === 'video/webm'
@@ -404,10 +513,13 @@ function buildCatalogHTML() {
     if (p.gallery && p.gallery.length > 1) {
       galleryData = p.gallery.slice(1).map((g, i) => {
         const ext = ((g && typeof g === 'object' && g.mime) || 'image/png').split('/')[1] || 'png';
+        const mediaSrc = inlineAssets
+          ? buildInlineMediaSrc(g, (g && g.mime) || 'image/png')
+          : `img/${safeId}_${i+1}.${ext}`;
         if (g && g.mime === 'video/webm') {
-          return `<video class="pcard-extra-img" src="img/${safeId}_${i+1}.webm" data-idx="${i+1}" style="display:none" muted loop autoplay playsinline></video>`;
+          return `<video class="pcard-extra-img" src="${inlineAssets ? mediaSrc : `img/${safeId}_${i+1}.webm`}" data-idx="${i+1}" style="display:none" muted loop autoplay playsinline></video>`;
         }
-        return `<img class="pcard-extra-img" src="img/${safeId}_${i+1}.${ext}" data-idx="${i+1}" alt="${p.nome} ${i+2}" style="display:none">`;
+        return `<img class="pcard-extra-img" src="${mediaSrc}" data-idx="${i+1}" alt="${p.nome} ${i+2}" style="display:none">`;
       }).join('');
     }
 
@@ -433,6 +545,7 @@ function buildCatalogHTML() {
       ${p.codigo ? `<span class="cod">#${p.codigo}</span>` : ''}
     </div>
     <h3>${p.nome}</h3>
+    ${tagBadges}
     ${colorDots}
     ${dets ? `<ul class="details">${dets}</ul>` : ''}
   </div>
@@ -467,7 +580,9 @@ function buildCatalogHTML() {
 .pv-overlay.open{opacity:1;pointer-events:all;}
 .pv-modal{background:#fff;border-radius:26px;width:100%;max-width:740px;max-height:90vh;overflow:hidden;display:flex;box-shadow:0 40px 100px rgba(0,0,0,.35);transform:scale(.95) translateY(16px);transition:transform .3s cubic-bezier(.2,.8,.2,1);position:relative;}
 .pv-overlay.open .pv-modal{transform:scale(1) translateY(0);}
-.pv-img-side{width:300px;flex-shrink:0;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;padding:28px;}
+.pv-img-side{width:300px;flex-shrink:0;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;padding:28px;background:linear-gradient(var(--pv-g,135deg,#f0f0f0,#e0e0e0));}
+.pv-img-side::before{content:'';position:absolute;inset:18px;background:${safeWatermarkAsset ? `url('${safeWatermarkAsset}') center/64% no-repeat` : 'none'};opacity:${wmOpacity};filter:grayscale(1);pointer-events:none;z-index:0;}
+.pv-img-badge{position:absolute;top:14px;left:14px;z-index:5;display:inline-flex;align-items:center;min-height:28px;max-width:calc(100% - 72px);padding:6px 12px;border-radius:999px;background:rgba(255,255,255,.9);color:var(--pv-tag-c,#666);border:1px solid rgba(255,255,255,.7);backdrop-filter:blur(10px);box-shadow:0 10px 24px rgba(0,0,0,.12);font-size:.62rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .pv-glow{position:absolute;width:240px;height:240px;background:radial-gradient(circle,rgba(255,255,255,.6) 0%,transparent 68%);border-radius:50%;pointer-events:none;}
 .pv-img-side img{max-width:100%;max-height:250px;object-fit:contain;position:relative;z-index:1;filter:drop-shadow(0 14px 30px rgba(0,0,0,.22));animation:pvFloat 4s ease-in-out infinite;}
 .pv-img-side .pv-ph{font-size:7rem;opacity:.22;position:relative;z-index:1;}
@@ -611,6 +726,16 @@ function pvRenderModal() {
   pvSetImg(0);
   pvUpdateNav();
 
+  var cardTags = Array.from(card.querySelectorAll('.prod-tag'));
+  var pvImgBadge = document.getElementById('pvImgBadge');
+  if (cardTags.length) {
+    pvImgBadge.textContent = cardTags[0].textContent.trim();
+    pvImgBadge.style.display = 'inline-flex';
+  } else {
+    pvImgBadge.textContent = '';
+    pvImgBadge.style.display = 'none';
+  }
+
   // Placeholder sem imagem
   if (!pvCurImgs.length) {
     var pvPh = document.getElementById('pvPh');
@@ -739,6 +864,7 @@ nav{position:sticky;top:0;z-index:100;background:rgba(247,243,238,.92);backdrop-
 .card::after{content:'Ver detalhes';position:absolute;bottom:0;left:0;right:0;background:var(--verde);color:#fff;font-size:.7rem;font-weight:600;letter-spacing:.06em;text-align:center;padding:8px 0;transform:translateY(100%);transition:transform .22s cubic-bezier(.2,.8,.2,1);}
 .card:hover::after{transform:translateY(0);}
 .card-img{height:200px;display:flex;align-items:center;justify-content:center;background:linear-gradient(var(--g));position:relative;overflow:hidden;}
+.card-img::before{content:'';position:absolute;inset:10px;background:${safeWatermarkAsset ? `url('${safeWatermarkAsset}') center/62% no-repeat` : 'none'};opacity:${wmOpacity};filter:grayscale(1);pointer-events:none;z-index:0;}
 .img-glow{position:absolute;width:160px;height:160px;background:radial-gradient(circle,rgba(255,255,255,.55) 0%,transparent 70%);border-radius:50%;pointer-events:none;}
 .placeholder-emoji{font-size:5rem;position:relative;z-index:1;opacity:.4;user-select:none;}
 .card-body{padding:16px 18px 20px;flex:1;display:flex;flex-direction:column;gap:8px;}
@@ -746,6 +872,8 @@ nav{position:sticky;top:0;z-index:100;background:rgba(247,243,238,.92);backdrop-
 .cat-tag{font-size:.62rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;background:var(--tag-bg);color:var(--tag-c);padding:3px 9px;border-radius:50px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px;}
 .cod{font-size:.6rem;color:var(--muted);letter-spacing:.06em;white-space:nowrap;flex-shrink:0;}
 .card-body h3{font-family:'Playfair Display',serif;font-size:1.02rem;font-weight:600;line-height:1.3;color:var(--text);}
+.prod-tags{display:flex;gap:6px;flex-wrap:wrap;padding-top:2px;}
+.prod-tag{display:inline-flex;align-items:center;min-height:24px;padding:4px 10px;border-radius:999px;background:rgba(0,0,0,.06);color:var(--text);font-size:.62rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;}
 .details{list-style:none;margin-top:auto;border-top:1px solid rgba(0,0,0,.05);padding-top:8px;}
 .details li{font-size:.71rem;color:var(--mid);line-height:1.5;padding:3px 0;border-bottom:1px solid rgba(0,0,0,.04);display:flex;align-items:flex-start;gap:6px;}
 .details li:last-child{border-bottom:none;}
@@ -813,8 +941,10 @@ ${viewerCSS}
   <div class="footer-inner">
     <div>
       ${s.logoImg
-        ? `<img src="img/logo.png" alt="${s.siteName}" style="height:48px;object-fit:contain;">`
-        : `<div class="footer-logo">${s.siteName}<span>.</span></div>`}
+        ? `<img src="${exportedLogoAsset}" alt="${s.siteName}" style="height:48px;object-fit:contain;">`
+        : (safeLogoAsset
+          ? `<img src="${safeLogoAsset}" alt="${s.siteName}" style="height:48px;object-fit:contain;">`
+          : `<div class="footer-logo">${s.siteName}<span>.</span></div>`)}
       <div class="footer-contact">
         ${s.contWhatsapp ? `<span>📱 ${s.contWhatsapp}</span>` : ''}
         ${s.contEmail    ? `<span>✉️ ${s.contEmail}</span>`    : ''}
@@ -833,6 +963,7 @@ ${viewerCSS}
     <button class="pv-close" onclick="pvClose()">✕</button>
     <div class="pv-img-side" id="pvImgSide">
       <div class="pv-glow"></div>
+      <div class="pv-img-badge" id="pvImgBadge" style="display:none"></div>
       <img id="pvImg" src="" alt="" style="display:none">
       <div class="pv-ph" id="pvPh" style="display:none"></div>
       <button class="pv-img-arrow prev" id="pvGalleryPrev" onclick="pvGalleryNav(-1)">&#8249;</button>
@@ -875,15 +1006,23 @@ searchInput.addEventListener('input', function(){
   setTimeout(function(){ pvAllCards = Array.from(document.querySelectorAll('.card:not(.hidden)')); }, 50);
 });
 // ── NAV FILTER ──
-document.querySelectorAll('[data-filter="all"]').forEach(btn => {
+document.querySelectorAll('[data-filter]').forEach(btn => {
   btn.addEventListener('click', e => {
     e.preventDefault();
+    const filter = btn.dataset.filter;
     document.querySelectorAll('[data-filter]').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
-    cards.forEach(c => c.classList.remove('hidden'));
-    sections.forEach(s => s.classList.remove('all-hidden'));
-    searchInput.value = '';
-    window.scrollTo({top:0,behavior:'smooth'});
+    if(filter === 'all') {
+      cards.forEach(c => c.classList.remove('hidden'));
+      sections.forEach(s => s.classList.remove('all-hidden'));
+      searchInput.value = '';
+      window.scrollTo({top:0,behavior:'smooth'});
+      return;
+    }
+    const targetSection = document.querySelector('.cat-section[data-cat="' + CSS.escape(filter) + '"]');
+    if(targetSection) {
+      targetSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
   });
 });
 const obs = new IntersectionObserver(entries => {
@@ -908,5 +1047,3 @@ ${viewerJS}
 </div>
 </body></html>`;
 }
-
-

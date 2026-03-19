@@ -20,20 +20,38 @@ function handleLogoUpload(e) {
 }
 
 function updatePreview() {
+  const logo = document.querySelector('#sidebarLogo .sidebar-logo-img');
   const name = document.getElementById('siteName').value || 'DeliVet';
-  document.getElementById('sidebarLogo').innerHTML = name + '<span>.</span>';
+  if(logo) logo.alt = name;
+}
+
+function updateWatermarkPreview() {
+  const slider = document.getElementById('watermarkOpacity');
+  const valueEl = document.getElementById('watermarkOpacityValue');
+  const raw = slider ? parseInt(slider.value, 10) || 0 : 18;
+  const opacity = Math.max(0, Math.min(40, raw)) / 100;
+  settings.watermarkOpacity = opacity;
+  if(valueEl) valueEl.textContent = Math.round(opacity * 100) + '%';
+  document.documentElement.style.setProperty('--wm-opacity', opacity.toFixed(2));
 }
 
 function updateColorPreview() {
   const v = document.getElementById('colorVerde').value;
   const l = document.getElementById('colorLaranja').value;
   const b = document.getElementById('colorBg').value;
+  settings.colorVerde = v;
+  settings.colorLaranja = l;
+  settings.colorBg = b;
   document.getElementById('colorVerdeHex').value = v;
   document.getElementById('colorLaranjaHex').value = l;
   document.getElementById('colorBgHex').value = b;
   document.getElementById('sw1').style.background = v;
   document.getElementById('sw2').style.background = l;
   document.getElementById('sw3').style.background = b;
+  document.documentElement.style.setProperty('--verde', v);
+  document.documentElement.style.setProperty('--laranja', l);
+  document.documentElement.style.setProperty('--bg', b);
+  updateWatermarkPreview();
 }
 
 function syncColorFromText(colorId, textId) {
@@ -50,6 +68,7 @@ function saveSettings() {
   settings.colorVerde = document.getElementById('colorVerde').value;
   settings.colorLaranja = document.getElementById('colorLaranja').value;
   settings.colorBg = document.getElementById('colorBg').value;
+  settings.watermarkOpacity = (parseInt(document.getElementById('watermarkOpacity').value, 10) || 0) / 100;
   settings.heroLine1 = document.getElementById('heroLine1').value;
   settings.heroLine2 = document.getElementById('heroLine2').value;
   settings.heroLine3 = document.getElementById('heroLine3').value;

@@ -64,6 +64,104 @@ function addProdColor() {
   renderProdColors();
 }
 
+function renderTagPresets() {
+  const container = document.getElementById('tagPresets');
+  if(!container) return;
+  container.innerHTML = '';
+  TAG_PRESETS.forEach(function(label) {
+    const isActive = currentTags.some(function(tag) {
+      return tag.label.toLowerCase() === label.toLowerCase() && tag.active !== false;
+    });
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'tag-preset' + (isActive ? ' active' : '');
+    btn.textContent = label;
+    btn.onclick = function() {
+      const existingIdx = currentTags.findIndex(function(tag) {
+        return tag.label.toLowerCase() === label.toLowerCase();
+      });
+      if(existingIdx >= 0) currentTags[existingIdx].active = currentTags[existingIdx].active === false;
+      else currentTags.push({ label: label, active: true });
+      renderTagPresets();
+      renderProductTags();
+    };
+    container.appendChild(btn);
+  });
+}
+
+function renderProductTags() {
+  const list = document.getElementById('prodTagsList');
+  if(!list) return;
+  if(!currentTags.length) {
+    list.innerHTML = '<div class="prod-tags-empty">Nenhuma tag adicionada</div>';
+    return;
+  }
+  list.innerHTML = currentTags.map(function(tag, i) {
+    return `
+      <div class="prod-tag-item${tag.active === false ? ' is-disabled' : ''}">
+        <label class="tag-toggle">
+          <input type="checkbox" ${tag.active === false ? '' : 'checked'} onchange="toggleProductTag(${i}, this.checked)">
+          <span>${tag.active === false ? 'Desativada' : 'Ativa'}</span>
+        </label>
+        <input type="text" value="${escHtml(tag.label)}" placeholder="Nome da tag" oninput="updateProductTagLabel(${i}, this.value)">
+        <button class="btn-icon remove" type="button" onclick="removeProductTag(${i})">✕</button>
+      </div>
+    `;
+  }).join('');
+}
+
+function addProductTag(label) {
+  const input = document.getElementById('newTagInput');
+  const raw = typeof label === 'string' ? label : (input ? input.value : '');
+  const clean = String(raw || '').trim();
+  if(!clean) {
+    showToast('Digite o nome da tag', 'error');
+    return;
+  }
+  const existing = currentTags.find(function(tag) {
+    return tag.label.toLowerCase() === clean.toLowerCase();
+  });
+  if(existing) {
+    existing.active = true;
+    existing.label = clean;
+  } else {
+    currentTags.push({ label: clean, active: true });
+  }
+  if(input) input.value = '';
+  renderTagPresets();
+  renderProductTags();
+}
+
+function toggleProductTag(i, checked) {
+  if(!currentTags[i]) return;
+  currentTags[i].active = !!checked;
+  renderTagPresets();
+  renderProductTags();
+}
+
+function updateProductTagLabel(i, value) {
+  if(!currentTags[i]) return;
+  currentTags[i].label = value;
+  renderTagPresets();
+}
+
+function removeProductTag(i) {
+  currentTags.splice(i, 1);
+  renderTagPresets();
+  renderProductTags();
+}
+
+function getProductTags() {
+  return currentTags
+    .map(function(tag) {
+      return {
+        label: String(tag.label || '').trim(),
+        active: tag.active !== false
+      };
+    })
+    .filter(function(tag) { return !!tag.label; });
+}
+
 // Details list
 function renderDetailsList(items) {
   const list = document.getElementById('detailsList');
@@ -101,6 +199,7 @@ function saveProduct() {
     codigo: document.getElementById('prodCodigo').value.trim(),
     gtin: document.getElementById('prodGtin').value.trim(),
     categoria: document.getElementById('prodCategoria').value,
+    tags: getProductTags(),
     detalhes: getDetails(),
     // Galeria: salva array completo; img = primeira foto (retrocompatibilidade)
     gallery: currentGallery.map(g => Object.assign({}, g)),
